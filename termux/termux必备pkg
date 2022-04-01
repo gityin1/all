@@ -1,0 +1,4 @@
+pkg install proot git python wget curl tar -y
+git clone https://github.com/sqlsec/termux-install-linux
+cd termux-install-linux
+
