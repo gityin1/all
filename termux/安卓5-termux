@@ -1,0 +1,33 @@
+命令行替换：
+
+sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://termux.com/game-packages-21-bin games stable@' $PREFIX/etc/apt/sources.list.d/game.list
+sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://termux.com/science-packages-21-bin science stable@' $PREFIX/etc/apt/sources.list.d/science.list
+apt update && apt upgrade
+手动修改：
+
+编辑 $PREFIX/etc/apt/sources.list.d/science.list 修改为如下内容
+
+原
+deb https://dl.bintray.com/grimler/science-packages-21 science stable
+后
+deb https://termux.com/science-packages-21-bin science stable
+编辑 $PREFIX/etc/apt/sources.list.d/game.list 修改为如下内容
+
+原
+deb https://dl.bintray.com/grimler/game-packages-21 games stable
+后
+deb https://termux.com/game-packages-21-bin games stable
+$PREFIX/etc/apt/sources.list 内容保持不变
+
+deb https://termux.net stable main
+此时执行apt update && apt upgrade发现可以正常执行。
+
+打开ssh
+
+执行安装
+pkg install openssh
+设置密码
+passwd
+运行ssh
+sshd
+此时可以用ssh工具连接上，端口为8022。登录用户名是Linux，如果不确定使用uname命令查看。
