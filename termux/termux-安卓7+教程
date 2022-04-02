@@ -30,3 +30,5 @@ cd ~/Termux-Linux/Debian && ./start-debian.sh
 #wget -O x-ui.zip https://gitee.com/poiuty123/all/releases/x-ui-arm64.zip
 wget -O x-ui.tar.gz https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-arm64.tar.gz
 tar zxvf x-ui.tar.gz
+cd ~/x-ui
+chmod +x x-ui x-ui.service x-ui.sh ./bin/geoip.dat ./bin/geosite.dat ./bin/xray-linux-arm64
