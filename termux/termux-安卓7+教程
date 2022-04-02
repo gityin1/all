@@ -1,0 +1,25 @@
+pkg install proot git python wget curl tar -y
+
+
+命令行替换
+如果您在使用termux v0.118及以上版本，使用如下命令行替换官方源为 TUNA 镜像源
+sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
+apt update && apt upgrade
+
+如果您在使用termux v0.117及以下版本，则需要使用如下命令
+sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
+sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/game-packages-24 games stable@' $PREFIX/etc/apt/sources.list.d/game.list
+sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/science-packages-24 science stable@' $PREFIX/etc/apt/sources.list.d/science.list
+apt update && apt upgrade
+
+
+执行安装
+pkg install openssh
+设置密码
+passwd
+运行ssh
+sshd
+此时可以用ssh工具连接上，端口为8022。登录用户名是Linux，如果不确定使用uname命令查看。
+
+wget https://gitee.com/poiuty123/all/raw/master/termux/termux-install.py
+python termux-install.py
