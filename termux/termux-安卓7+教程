@@ -23,3 +23,8 @@ sshd
 
 git clone https://gitee.com/poiuty123/termux.git
 python termux-install.py
+
+安装x-ui
+#wget -O x-ui.zip https://gitee.com/poiuty123/all/releases/x-ui-arm64.zip
+wget -O x-ui.tar.gz https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-arm64.tar.gz
+tar zxvf x-ui.tar.gz
