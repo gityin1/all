@@ -21,5 +21,5 @@ passwd
 sshd
 此时可以用ssh工具连接上，端口为8022。登录用户名是Linux，如果不确定使用uname命令查看。
 
-wget https://gitee.com/poiuty123/all/raw/master/termux/termux-install.py
+git clone https://gitee.com/poiuty123/termux.git
 python termux-install.py
