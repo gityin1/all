@@ -1,13 +1,12 @@
+termux sh脚本格式:bash -c "$(curl -L https://xxx)"
+安卓5安装termux-v0.73
+
 pkg install proot git python wget curl tar -y
-
-
 命令行替换：
-
 sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://termux.com/game-packages-21-bin games stable@' $PREFIX/etc/apt/sources.list.d/game.list
 sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://termux.com/science-packages-21-bin science stable@' $PREFIX/etc/apt/sources.list.d/science.list
 apt update && apt upgrade
 或者手动修改：
-
 编辑 $PREFIX/etc/apt/sources.list.d/science.list 修改为如下内容
 
 原
@@ -24,7 +23,6 @@ $PREFIX/etc/apt/sources.list 内容保持不变
 
 deb https://termux.net stable main
 此时执行apt update && apt upgrade发现可以正常执行。
-
 
 执行安装
 pkg install openssh
