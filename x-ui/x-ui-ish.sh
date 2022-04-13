@@ -23,7 +23,7 @@ case "$(arch -s)" in
         ;;
     
     *)
-        echo "error: 不支持您的架构"
+        echo "error:不支持您的架构"
         exit 1
         ;;
 esac
@@ -53,5 +53,4 @@ main() {
     install_xray
     echo "默认vless，端口2052，配置文件请修改/usr/local/config.json"
 }
-
 main
