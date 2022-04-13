@@ -55,12 +55,12 @@ case "$(arch -s)" in
 esac
 
 TMP_DIRECTORY="$(mktemp -d)/"
-XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
+#XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XRAY_LINK="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XUI_LINK="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-amd64.tar.gz"
 
 install_software() {
-    if [[ -n "$(command -v curl)" ]]; then
+    if [[ -n "$(command -v tar)" ]]; then
         return
     fi
     if [[ -n "$(command -v unzip)" ]]; then
@@ -68,7 +68,7 @@ install_software() {
     fi
     if [ "$(command -v apk)" ]; then
         apk update
-        apk add curl unzip wget openssh tar
+        apk add  unzip  tar
     else
         echo "error: 请手动安装apk curl unzip wget openssh tar"
         exit 1
@@ -94,7 +94,7 @@ install_xui() {
 
 install_xray() {
     wget -N --no-check-certificate -O ${XRAY_FILE} ${DOWNLOAD_XRAY_LINK}
-    unzip -q ${ZIP_FILE} -d ${TMP_DIRECTORY}
+    unzip -q ${XRAY_FILE} -d ${TMP_DIRECTORY}
     rm -rf /usr/local/bin/${XRAY_FILE}
     install -m 755 "${TMP_DIRECTORY}xray" "/usr/local/bin/xray-linux-amd64"
  
