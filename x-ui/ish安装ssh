@@ -1,0 +1,23 @@
+#换源
+#编辑/etc/apk/repositories这个文件：
+vi /etc/apk/repositories
+#在最上面添加这两行：
+# 阿里云源
+https://mirrors.aliyun.com/alpine/v3.11/main
+https://mirrors.aliyun.com/alpine/v3.11/community
+# 中科大源
+https://mirrors.ustc.edu.cn/alpine/v3.11/main
+https://mirrors.ustc.edu.cn/alpine/v3.11/community
+#或者
+sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+#安装ssh
+apk add openssh
+#生成所有类型的公钥、私钥
+ssh-keygen -A
+#设置密码
+passwd
+vim /etc/ssh/sshd_config
+#设置如下配置
+PermitRootLogin yes
+#运行sshd
+/usr/sbin/sshd
