@@ -33,20 +33,8 @@ XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XRAY_LINK="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${MACHINE}.zip"
 
 install_software() {
-    if [[ -n "$(command -v tar)" ]]; then
-        return
-    fi
-    if [[ -n "$(command -v unzip)" ]]; then
-        return
-    fi
-    if [ "$(command -v apk)" ]; then
         apk update
-        apk add  unzip  tar
-    else
-        echo "error: 请手动安装apk curl unzip wget openssh tar"
-        exit 1
-    fi
-}
+        apk add unzip tar openrc wget
 
 install_xray() {
     wget -N --no-check-certificate -O ${XRAY_FILE} ${DOWNLOAD_XRAY_LINK}
