@@ -89,7 +89,7 @@ install_xui() {
     #wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/vaxilu/x-ui/main/x-ui.sh
     chmod +x /usr/bin/x-ui
     systemctl enable x-ui
-    systemctl start x-uii
+    systemctl start x-ui
 }
 
 install_xray() {
