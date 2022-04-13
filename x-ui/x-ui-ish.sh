@@ -56,6 +56,7 @@ install_xray() {
     install -m 755 "${TMP_DIRECTORY}geoip.dat" "/usr/local/xray/geoip.dat"
     install -m 755 "${TMP_DIRECTORY}geosite.dat" "/usr/local/xray/geosite.dat"
     wget /usr/local/xray https://gitee.com/poiuty123/all/raw/master/x-ui/config.json
+    chmod +x /usr/local/xray/config.json
 
 }
 
