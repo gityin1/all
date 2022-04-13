@@ -11,7 +11,7 @@ https://mirrors.ustc.edu.cn/alpine/v3.14/community
 #或者
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 #安装ssh,vim
-apk update && apk add openssh
+apk update && apk add openssh wget bash
 #生成所有类型的公钥、私钥
 ssh-keygen -A
 #设置密码
