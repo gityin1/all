@@ -3,11 +3,11 @@
 vi /etc/apk/repositories
 #在最上面添加这两行：
 # 阿里云源
-https://mirrors.aliyun.com/alpine/v3.11/main
-https://mirrors.aliyun.com/alpine/v3.11/community
+https://mirrors.aliyun.com/alpine/v3.14/main
+https://mirrors.aliyun.com/alpine/v3.14/community
 # 中科大源
-https://mirrors.ustc.edu.cn/alpine/v3.11/main
-https://mirrors.ustc.edu.cn/alpine/v3.11/community
+https://mirrors.ustc.edu.cn/alpine/v3.14/main
+https://mirrors.ustc.edu.cn/alpine/v3.14/community
 #或者
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 #安装ssh
