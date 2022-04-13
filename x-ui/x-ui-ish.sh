@@ -55,7 +55,7 @@ case "$(arch -s)" in
 esac
 
 TMP_DIRECTORY="$(mktemp -d)/"
-#XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
+XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XRAY_LINK="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XUI_LINK="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-amd64.tar.gz"
 
