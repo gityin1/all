@@ -51,6 +51,7 @@ install_xray() {
 main() {
     install_software
     install_xray
-    echo "默认vless，端口2052，配置文件请修改/usr/local/config.json"
+    echo -e "默认vless，端口2052，配置文件请修改/usr/local/config.json"
 }
+echo -e "开始安装"
 main
