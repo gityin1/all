@@ -1,0 +1,32 @@
+
+安卓5安装termux-v0.73
+
+#替换源：
+sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://termux.com/game-packages-21-bin games stable@' $PREFIX/etc/apt/sources.list.d/game.list
+sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://termux.com/science-packages-21-bin science stable@' $PREFIX/etc/apt/sources.list.d/science.lis
+apt update && apt upgrade
+pkg install proot git python -y
+
+#安装ssh
+pkg install openssh
+#设置密码
+passwd
+#运行ssh
+sshd
+此时可以用ssh工具连接上，端口为8022。登录用户名是Linux，如果不确定使用uname命令查看。
+
+#安装linux
+git clone https://gitee.com/poiuty123/termux.git
+cd ~/termux && python termux-install.py
+#启动linux，安装的是debian，其他系统运行Termux-Linux下相应sh文件
+cd ~/Termux-Linux/Debian && ./start-debian.sh
+#安装依赖文件
+apt update && apt install wget tar -y
+
+#安装x-ui
+wget -O x-ui.tar.gz https://github.com/vaxilu/x-ui/releases/download/0.3.2/x-ui-linux-arm64.tar.gz
+tar zxvf x-ui.tar.gz
+cd ~/x-ui
+chmod +x x-ui x-ui.service x-ui.sh ./bin/*
+#启动
+./x-ui
