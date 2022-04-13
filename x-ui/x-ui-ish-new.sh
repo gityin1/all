@@ -1,59 +1,5 @@
 #!/usr/bin/env bash
 
-#set -euxo pipefail
-
-# Identify architecture
-case "$(arch -s)" in
-    'i386' | 'i686')
-        MACHINE='32'
-        ;;
-    'amd64' | 'x86_64')
-        MACHINE='64'
-        ;;
-    'armv5tel')
-        MACHINE='arm32-v5'
-        ;;
-    'armv6l')
-        MACHINE='arm32-v6'
-        grep Features /proc/cpuinfo | grep -qw 'vfp' || MACHINE='arm32-v5'
-        ;;
-    'armv7' | 'armv7l')
-        MACHINE='arm32-v7a'
-        grep Features /proc/cpuinfo | grep -qw 'vfp' || MACHINE='arm32-v5'
-        ;;
-    'armv8' | 'aarch64')
-        MACHINE='arm64-v8a'
-        ;;
-    'mips')
-        MACHINE='mips32'
-        ;;
-    'mipsle')
-        MACHINE='mips32le'
-        ;;
-    'mips64')
-        MACHINE='mips64'
-        ;;
-    'mips64le')
-        MACHINE='mips64le'
-        ;;
-    'ppc64')
-        MACHINE='ppc64'
-        ;;
-    'ppc64le')
-        MACHINE='ppc64le'
-        ;;
-    'riscv64')
-        MACHINE='riscv64'
-        ;;
-    's390x')
-        MACHINE='s390x'
-        ;;
-    *)
-        echo "error: 不支持您的架构"
-        exit 1
-        ;;
-esac
-
 TMP_DIRECTORY="$(mktemp -d)/"
 XRAY_FILE="${TMP_DIRECTORY}Xray-linux-${MACHINE}.zip"
 DOWNLOAD_XRAY_LINK="https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${MACHINE}.zip"
@@ -70,16 +16,15 @@ install_software() {
         apk update
         apk add  unzip  tar
     else
-        echo "error: 请手动安装apk curl unzip wget openssh tar"
+        echo "error: 请手动安装unzip tar"
         exit 1
     fi
 }
 
 
 install_xui() {
-    if [[ -e /usr/local/x-ui/ ]]; then
-        rm /usr/local/x-ui/ -rf
-    fi
+    
+    rm /usr/local/x-ui/ -rf
     
     wget -N --no-check-certificate -O /usr/local/x-ui-linux-amd64.tar.gz "${DOWNLOAD_XUI_LINK}"
     cd /usr/local/
@@ -88,8 +33,6 @@ install_xui() {
     cd x-ui
     chmod +x x-ui x-ui.sh 
   
-    #wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/vaxilu/x-ui/main/x-ui.sh
-    
 }
 
 install_xray() {
