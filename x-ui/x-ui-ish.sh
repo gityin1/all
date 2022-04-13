@@ -55,12 +55,14 @@ install_xray() {
     install -m 755 "${TMP_DIRECTORY}xray" "/usr/local/xray/xray"
     install -m 755 "${TMP_DIRECTORY}geoip.dat" "/usr/local/xray/geoip.dat"
     install -m 755 "${TMP_DIRECTORY}geosite.dat" "/usr/local/xray/geosite.dat"
+    wget /usr/local/xray https://gitee.com/poiuty123/all/raw/master/x-ui/config.json
 
 }
 
 main() {
     install_software
     install_xray
+    echo "默认vless，端口2052，配置文件请修改/usr/local/config.json"
 }
 
 main
