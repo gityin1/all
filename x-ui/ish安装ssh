@@ -10,13 +10,13 @@ https://mirrors.ustc.edu.cn/alpine/v3.14/main
 https://mirrors.ustc.edu.cn/alpine/v3.14/community
 #或者
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
-#安装ssh
+#安装ssh,vim
 apk update && apk add openssh
 #生成所有类型的公钥、私钥
 ssh-keygen -A
 #设置密码
 passwd
-vim /etc/ssh/sshd_config
+vi /etc/ssh/sshd_config
 #设置如下配置
 PermitRootLogin yes
 #运行sshd
