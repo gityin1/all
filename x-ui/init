@@ -1,11 +1,11 @@
 #!/sbin/openrc-run
 
 name="xray"
-description="The best v2ray-core, with XTLS support"
-description_checkconfig="Test configuration file"
+description="xray"
+#description_checkconfig="xray"
 
-#: ${env:="XRAY_LOCATION_ASSET=/usr/local/xray/"}
-#: ${confdir:="/usr/local/xray/"}
+#: ${env:="XRAY_LOCATION_ASSET=/usr/local/lib/xray/"}
+#: ${confdir:="/usr/local/etc/xray/"}
 
 command="/usr/local/xray/xray"
 #command_args="run -confdir $confdir"
@@ -16,9 +16,9 @@ command_background="yes"
 
 #extra_commands="checkconfig"
 
-#depend() {
-#	need net
-#}
+depend() {
+	need net
+}
 
 #checkconfig() {
 #	if [ ! -d "$confdir" ]; then
