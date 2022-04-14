@@ -151,5 +151,7 @@ install_x-ui() {
 }
 
 echo -e "${green}开始安装${plain}"
+rm -rf /etc/localtime
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 install_base
 install_x-ui $1
