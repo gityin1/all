@@ -1,0 +1,26 @@
+#!/sbin/openrc-run  
+name="xray"  
+description="xray"  
+#description_checkconfig="xray"  
+#: ${env:="XRAY_LOCATION_ASSET=/usr/local/lib/xray/"}  
+#: ${confdir:="/usr/local/etc/xray/"}                  
+command="/usr/local/xray/xray"                         
+#command_args="run -confdir $confdir"  
+command_user="nobody"                  
+pidfile="/run/xray.pid"                
+command_background="yes"               
+#extra_commands="checkconfig"  
+depend()                       
+        need net               
+}                              
+#checkconfig() {               
+#       if [ ! -d "$confdir" ]; then  
+#               eerror "You need to setup $confdir first"  
+#               return 1                                   
+#       fi                                                 
+#       export $env                                        
+#       $command $command_args -test                       
+#}                                                         
+#start_pre() {                                             
+#       checkconfig                                        
+#}                                    
