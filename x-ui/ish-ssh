@@ -1,5 +1,4 @@
-#换源
-#编辑/etc/apk/repositories这个文件：
+#换源，编辑/etc/apk/repositories这个文件：
 vi /etc/apk/repositories
 #在最上面添加这两行：
 # 阿里云源
@@ -10,8 +9,8 @@ https://mirrors.ustc.edu.cn/alpine/v3.14/main
 https://mirrors.ustc.edu.cn/alpine/v3.14/community
 #或者
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
-#安装ssh,vim
-apk update && apk add openssh wget bash
+#安装依赖
+apk update && apk add openssh wget bash tar unzip
 #生成所有类型的公钥、私钥
 ssh-keygen -A
 #设置密码
@@ -21,3 +20,5 @@ vi /etc/ssh/sshd_config
 PermitRootLogin yes
 #运行sshd
 /usr/sbin/sshd
+#一键脚本
+wget https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ish.sh && bash x-ish.sh
