@@ -10,7 +10,7 @@ command_user="nobody"
 pidfile="/run/xray.pid"                
 command_background="yes"               
 #extra_commands="checkconfig"  
-depend()                       
+depend() {                    
         need net               
 }                              
 #checkconfig() {               
