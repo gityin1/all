@@ -16,9 +16,9 @@ command_background="yes"
 
 #extra_commands="checkconfig"
 
-depend() {
-	need net
-}
+#depend() {
+#	need net
+#}
 
 #checkconfig() {
 #	if [ ! -d "$confdir" ]; then
@@ -31,4 +31,4 @@ depend() {
 
 #start_pre() {
 #	checkconfig
-}
+#}
