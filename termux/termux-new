@@ -1,15 +1,12 @@
 
-#手机需要root！！！！！！！
-#安卓5，6，7安装termux-v0.73（自行百度下载即可）
-#替换源全部复制直接回车：
+#安卓5，6，7教程
+#安卓5，6，7教程
+#安卓5，6，7教程
+#安装termux-v0.73（自行百度下载即可）
+#打开termux，替换源全部复制直接回车：
 sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://termux.com/game-packages-21-bin games stable@' $PREFIX/etc/apt/sources.list.d/game.list
 sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://termux.com/science-packages-21-bin science stable@' $PREFIX/etc/apt/sources.list.d/science.lis
 apt update && apt upgrade -y
-
-#安卓7以上安装最新版termux即可（目前最新版是v0.118，自行百度下载即可）
-#如果您在使用termux v0.118及以上版本，使用如下命令行替换官方源为 TUNA 镜像源，全部复制直接回车：
-sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
-apt update && apt upgrade
 
 #安装ssh
 pkg install openssh -y
@@ -21,16 +18,46 @@ sshd
 
 #安装依赖文件
 pkg install proot git python -y
-#安装linux
+#安装debian
 git clone https://gitee.com/poiuty123/termux.git && cd ~/termux && python termux-install.py
-#启动linux，推荐安装的是debian
 #例如启动debian
 cd ~/Termux-Linux/Debian && ./start-debian.sh
 #安装依赖文件
 apt update && apt install wget tar -y
-
 #校准debian系统时间
 rm -rf /etc/localtime && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 #安装x-ui
 wget -O x-ui.tar.gz https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz && tar zxvf x-ui.tar.gz && cd ~/x-ui && chmod +x x-ui x-ui.service x-ui.sh ./bin/* && ./x-ui
+
+
+#安卓7以上
+#安卓7以上
+#安卓7以上
+#安卓7以上安装最新版termux即可（目前最新版是v0.118）
+#打开termux，使用如下命令行替换官方源为 TUNA 镜像源，全部复制直接回车：
+sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
+apt update && apt upgrade -y
+
+#安装ssh
+pkg install openssh -y
+#设置密码
+passwd
+#运行ssh
+sshd
+#此时可以用ssh工具连接上，端口为8022。登录用户名是Linux
+
+#安装依赖文件
+pkg install proot git python -y
+#安装debian
+git clone https://gitee.com/poiuty123/termux.git && cd ~/termux && python termux-install.py
+#例如启动debian
+cd ~/Termux-Linux/Debian && ./start-debian.sh
+#安装依赖文件
+apt update && apt install wget tar -y
+#校准debian系统时间
+rm -rf /etc/localtime && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#安装xray脚本
+wget -O termux-xray.sh https://raw.githubusercontent.com/ppoonk/all/master/termux/termux-xray.sh && bash termux-xray.sh
+
+
