@@ -7,9 +7,9 @@ plain='\033[0m'
 
 install_base() {
     if [ -f /etc/debian_version ]; then
-        apt install wget curl tar -y
+        apt install wget curl tar unzip -y
     else
-        yum install wget curl tar -y
+        yum install wget curl tar unzip -y
     fi
 }
 
