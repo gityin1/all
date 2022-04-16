@@ -1,11 +1,12 @@
 
-#安卓5，6安装termux-v0.73
+#手机需要root！！！！！！！
+#安卓5，6，7安装termux-v0.73（自行百度下载即可）
 #替换源全部复制直接回车：
 sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://termux.com/game-packages-21-bin games stable@' $PREFIX/etc/apt/sources.list.d/game.list
 sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://termux.com/science-packages-21-bin science stable@' $PREFIX/etc/apt/sources.list.d/science.lis
-apt update && apt upgrade
+apt update && apt upgrade -y
 
-#安卓7以上安装最新版termux即可，目前最新版是termux 0.118
+#安卓7以上安装最新版termux即可（目前最新版是v0.118，自行百度下载即可）
 #如果您在使用termux v0.118及以上版本，使用如下命令行替换官方源为 TUNA 镜像源，全部复制直接回车：
 sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
 apt update && apt upgrade
@@ -14,41 +15,38 @@ apt update && apt upgrade
 sed -i 's@^\(deb.*stable main\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main@' $PREFIX/etc/apt/sources.list
 sed -i 's@^\(deb.*games stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/game-packages-24 games stable@' $PREFIX/etc/apt/sources.list.d/game.list
 sed -i 's@^\(deb.*science stable\)$@#\1\ndeb https://mirrors.tuna.tsinghua.edu.cn/termux/science-packages-24 science stable@' $PREFIX/etc/apt/sources.list.d/science.list
-apt update && apt upgrade
+apt update && apt upgrade -y
 
 #安装ssh
-pkg install openssh
+pkg install openssh -y
 #设置密码
 passwd
 #运行ssh
 sshd
-此时可以用ssh工具连接上，端口为8022。登录用户名是Linux
+#此时可以用ssh工具连接上，端口为8022。登录用户名是Linux
 
 #安装依赖文件
 pkg install proot git python -y
-
 #安装linux
-git clone https://gitee.com/poiuty123/termux.git
-cd ~/termux && python termux-install.py
+git clone https://gitee.com/poiuty123/termux.git && cd ~/termux && python termux-install.py
 #启动linux，安装的是debian，其他系统请运行Termux-Linux下相应sh文件
+#例如启动debian
 cd ~/Termux-Linux/Debian && ./start-debian.sh
+#例如启动ubuntu
+cd ~/Termux-Linux/Ubuntu && ./start-ubuntu.sh
 #安装依赖文件
 apt update && apt install wget tar -y
 
 #校准linux系统时间
-#Centos系统
-date -R
-timedatectl set-local-rtc
-timedatectl set-timezone Asia/Shanghai
-# Debian/ubuntu系统
-date -R
-rm -rf /etc/localtime
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#Centos系统，按照提示选择时区和城市
+apt install tzdata -y
+#上一步完成以后再运行下面命令
+rm -rf /etc/localtime && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+（该命令在手机上失效timedatectl set-local-rtc && timedatectl set-timezone Asia/Shanghai）
+# Debian系统
+rm -rf /etc/localtime && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#ubuntu系统,根据提示选择时区
+apt install tzdata -y
 
 #安装x-ui
-wget -O x-ui.tar.gz https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz
-tar zxvf x-ui.tar.gz
-cd ~/x-ui
-chmod +x x-ui x-ui.service x-ui.sh ./bin/*
-#启动
-./x-ui
+wget -O x-ui.tar.gz https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz && tar zxvf x-ui.tar.gz && cd ~/x-ui && chmod +x x-ui x-ui.service x-ui.sh ./bin/* && ./x-ui
