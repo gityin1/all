@@ -19,7 +19,7 @@ install_xray() {
     else
     cd /root/
     wget -N --no-check-certificate -O /root/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-arm64-v8a.zip
-    unzip -do xray xray.zip
+    unzip xray.zip xray -do
     chmod +x xray/*
     wget -N --no-check-certificate -O /root/xray/config.json https://raw.fastgit.org/ppoonk/all/master/x-ui/config.json
     echo -e ""
