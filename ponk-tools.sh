@@ -122,7 +122,7 @@ Show_Menu() {
     yellow "11.国内机更换github hosts"
     yellow "12.bench.sh"          
     yellow "13.三网测速 "           
-    yellow "4.路由回程测试"             
+    yellow "14.路由回程测试"             
     yellow "15.warp"
     echo -e ""
     yellow "21.x-ui"
