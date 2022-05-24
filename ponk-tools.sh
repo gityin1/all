@@ -17,7 +17,6 @@ blue() {
 }
 
 # 架构arch (x86_64,x64,amd64,aarch64,arm64,arm,s390x)
-
 arch=$(uname -m)
 <<!EOF!
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
@@ -34,25 +33,17 @@ else
 
 # 比特位
 lbit=$( getconf LONG_BIT )
+# virt
 virt=$( systemd-detect-virt )
-
-# OS
-<<!EOF!
-[ -f /etc/redhat-release ] && awk '{print $0}' /etc/redhat-release && return
-[ -f /etc/os-release ] && awk -F'[= "]' '/PRETTY_NAME/{print $3,$4,$5}' /etc/os-release && return
-[ -f /etc/lsb-release ] && awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release && return
-!EOF!
-
-OS=""
+# release
+release=""
 if  [ -f /etc/os-release ]; then
-    OS=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
+    release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
 elif [ -f /etc/redhat-release ]; then
-    OS=$(awk '{print $1}' /etc/redhat-release)
+    release=$(awk '{print $1}' /etc/redhat-release)
 elif [ -f /etc/lsb-release ]; then
-    OS=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
+    release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
 fi
-
-
 # command
 <<!EOF!
 if [[ $(command -v apt-get) || $(command -v yum) ]] && [[ $(command -v systemctl) ]]; then
@@ -106,9 +97,9 @@ Return_Show_Menu() {
 # 显示info
 Show_Information() {
     blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
-    echo -e ""
-    echo -e "OS:$(blue "$OS" $lbit位)   Arch：$(blue "$arch")   虚拟化：$(blue "$virt")"   
-    echo -e ""
+   
+    echo -e "系统:$(blue "$release" $lbit位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt") 已用ram："   
+
     blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
 }
 
@@ -144,7 +135,7 @@ uninstall_apache2() {
         #temp=$(dpkg -l | grep apache2)
         #if [ -n temp ]; then
             systemctl stop httpd.service
-            apt-get --purge remove apache2 && apt-get --purge remove apache2-doc && apt-get --purge remove apache2-utils
+            apt-get --purge remove apache2 -y && apt-get --purge remove apache2-doc -y && apt-get --purge remove apache2-utils -y
             find /etc -name "*apache*" |xargs rm -rf && rm -rf /var/www && rm -rf /etc/libapache2-mod-jk
             yellow "卸载完成"
         #else yellow "无需卸载"
@@ -153,7 +144,7 @@ uninstall_apache2() {
        # temp=$(yum list | grep httpd)
        # if [ -n temp ]; then
             systemctl stop httpd.service
-            yum erase httpd.x86_64
+            yum erase httpd.x86_64 -y
             yellow "卸载完成"
         #else yellow "无需卸载"
     else red "请手动卸载apache"
@@ -162,9 +153,7 @@ uninstall_apache2() {
 }
 
 Install_xui_cn() {
-
-arch=$(arch)
-
+    local arch=""
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
     arch="amd64"
 elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
@@ -182,6 +171,7 @@ if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
     echo "本软件不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     exit -1
 fi
+}
 
 install_base() {
     if [[ x"$Cmd_Type" == x"centos" ]]; then
@@ -211,6 +201,58 @@ config_after_install() {
         red "已取消,所有设置项均为默认设置,请及时修改"
     fi
 }
+
+# 安装xraya
+
+Install_Xraya() {
+    #local arch=$(uname -m)
+    local arch1=""
+    local arch2=""
+    if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
+        arch1="x64"
+        arch2="64"
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+        arch1="arm64"
+        arch2="arm64-v8a"
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]]; then
+        arch1="arm"
+        arch2="arm32-v7a"
+    else
+        red "不支持的arch" && exit 1
+    fi
+
+    wget -N --no-check-certificate -O /root/xray.zip https://download.fastgit.org/XTLS/Xray-core/releases/download/latest/Xray-linux-${arch2}.zip
+    unzip -d ./xray -o xray.zip
+    #rm -f xray.zip
+    chmod +x xray/*
+    mv xray/xray /usr/local/bin/xray
+    mv xray /usr/local/share/
+    mkdir  /usr/local/xraya
+    wget -N --no-check-certificate -O /usr/local/xraya/xraya https://download.fastgit.org/v2rayA/v2rayA/releases/download/v1.5.7/v2raya_linux_${arch1}_1.5.7
+    chmod +x /usr/local/xraya/xraya
+    # 添加service
+    Name="xraya"
+    rm -rf /etc/systemd/system/$Name.service
+    WorkingDirectory="/usr/local/xraya"
+    ExecStart="/usr/local/xraya/xraya"
+    echo -e "[Unit]\nDescription=$name Service\nAfter=network.target
+    Wants=network.target
+
+    [Service]
+    Type=simple
+    WorkingDirectory=$WorkingDirectory
+    ExecStart=$ExecStart
+
+    [Install]
+    WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
+    systemctl daemon-reload
+    systemctl enable $Name
+    systemctl start $Name
+    yellow "使用方法 systemctl [start|restart|stop|status] $Name 
+    $Name服务状态如下："
+    systemctl status $Name
+}
+
 
 install_x-ui() {
     systemctl stop x-ui
@@ -251,7 +293,7 @@ install_x-ui() {
     echo -e "x-ui install      - 安装 x-ui 面板"
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
     echo -e "----------------------------------------------"
-}
+
 
 yellow "开始安装"
 install_base
@@ -268,22 +310,25 @@ Show_Menu() {
     yellow "11.国内机更换github hosts"
     yellow "12.bench.sh"          
     yellow "13.三网测速 "           
-    yellow "4.路由回程测试"             
+    yellow "14.路由回程测试"             
     yellow "15.warp"
     echo -e ""
-    yellow "21.x-ui"
-    yellow "22.x-ui国内机适用"
+    yellow "21.安装x-ui"
+    yellow "22.安装x-ui国内机适用"
     yellow "23.mack-a八合一脚本"
     yellow "24.CloudFlare Argo Tunnel隧道"
     yellow "25.BBR"
     yellow "26.BBr for openvz"
     yellow "27.下载XrayR"
+    yellow "28.安装xraya面板"
     echo -e ""
     yellow "31.ServerStatus-Hotaru服务端"
     yellow "32.ServerStatus-Hotaru客户端"
     echo -e ""
     yellow "41.安装宝塔770"
     yellow "42.将xxx写入systemctl服务"
+    yellow "43.安装docker"
+    yellow "44.安装docker-sspanel"
     echo -e ""
     yellow "52.卸载apache2"
     yellow "0.回车或输入0退出"
@@ -304,10 +349,12 @@ Show_Menu() {
         25) wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh ;;
         26) wget --no-cache -O lkl-haproxy.sh https://github.com/mzz2017/lkl-haproxy/raw/master/lkl-haproxy.sh && bash lkl-haproxy.sh ;;
         27) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
+        28) Install_Xraya ;;
         31) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh s ;;
         32) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh c ;;
         41) Install_BT;;
         42) Add_Systemctl_Service ;;
+        43) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
         51) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
         52) uninstall_apache2 ;;
         
