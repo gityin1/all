@@ -153,15 +153,15 @@ uninstall_apache2() {
 }
 
 Install_xui_cn() {
-    local arch=""
+    local arch1=""
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
-    arch="amd64"
+    arch1="amd64"
 elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
-    arch="arm64"
+    arc1h="arm64"
 elif [[ $arch == "s390x" ]]; then
-    arch="s390x"
+    arch1="s390x"
 else
-    arch="amd64"
+    arch1="amd64"
     red "检测架构失败，使用默认架构: ${arch}"
 fi
 
@@ -171,7 +171,7 @@ if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
     echo "本软件不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     exit -1
 fi
-}
+
 
 install_base() {
     if [[ x"$Cmd_Type" == x"centos" ]]; then
@@ -180,8 +180,6 @@ install_base() {
         apt install wget curl tar -y
     fi
 }
-
-#This function will be called when user installed x-ui out of sercurity
 config_after_install() {
     yellow "出于安全考虑，安装完成后需要强制修改端口与账户密码"
     read -p "请设置您的账户名:" config_account
@@ -201,9 +199,54 @@ config_after_install() {
         red "已取消,所有设置项均为默认设置,请及时修改"
     fi
 }
+install_x-ui() {
+    systemctl stop x-ui
+    cd /usr/local/
+    url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-${arch1}.tar.gz"
+    echo -e "开始安装 x-ui v"
+    wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch1}.tar.gz ${url}
+    if [[ -e /usr/local/x-ui/ ]]; then
+        rm /usr/local/x-ui/ -rf
+    fi
+    tar zxvf x-ui-linux-${arch1}.tar.gz
+    rm x-ui-linux-${arch1}.tar.gz -f
+    cd x-ui
+    chmod +x x-ui bin/xray-linux-${arch1}
+    cp -f x-ui.service /etc/systemd/system/
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/vaxilu/x-ui/main/x-ui.sh
+    chmod +x /usr/local/x-ui/x-ui.sh
+    chmod +x /usr/bin/x-ui
+    config_after_install
+
+    systemctl daemon-reload
+    systemctl enable x-ui
+    systemctl start x-ui
+    echo -e "x-ui 安装完成，面板已启动，"
+    echo -e ""
+    echo -e "x-ui 管理脚本使用方法: "
+    echo -e "----------------------------------------------"
+    echo -e "x-ui              - 显示管理菜单 (功能更多)"
+    echo -e "x-ui start        - 启动 x-ui 面板"
+    echo -e "x-ui stop         - 停止 x-ui 面板"
+    echo -e "x-ui restart      - 重启 x-ui 面板"
+    echo -e "x-ui status       - 查看 x-ui 状态"
+    echo -e "x-ui enable       - 设置 x-ui 开机自启"
+    echo -e "x-ui disable      - 取消 x-ui 开机自启"
+    echo -e "x-ui log          - 查看 x-ui 日志"
+    echo -e "x-ui v2-ui        - 迁移本机器的 v2-ui 账号数据至 x-ui"
+    echo -e "x-ui update       - 更新 x-ui 面板"
+    echo -e "x-ui install      - 安装 x-ui 面板"
+    echo -e "x-ui uninstall    - 卸载 x-ui 面板"
+    echo -e "----------------------------------------------"
+}  
+
+yellow "开始安装"
+install_base
+install_x-ui
+}
+
 
 # 安装xraya
-
 Install_Xraya() {
     #local arch=$(uname -m)
     local arch1=""
@@ -254,51 +297,40 @@ Install_Xraya() {
 }
 
 
-install_x-ui() {
-    systemctl stop x-ui
-    cd /usr/local/
-    url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-${arch}.tar.gz"
-    echo -e "开始安装 x-ui v"
-    wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url}
-    if [[ -e /usr/local/x-ui/ ]]; then
-        rm /usr/local/x-ui/ -rf
+#安装DDNS-GO
+Install_DDNS() {
+
+    local arch1=""
+    if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
+        arch1="x86_64"
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+        arch1="arm64"
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]]; then
+        arch1="armv6"
+    elif [[ $arch == "i386"  ]]; then
+        arch1="i386"
+    else
+        red "不支持的arch" && exit 1
     fi
-    tar zxvf x-ui-linux-${arch}.tar.gz
-    rm x-ui-linux-${arch}.tar.gz -f
-    cd x-ui
-    chmod +x x-ui bin/xray-linux-${arch}
-    cp -f x-ui.service /etc/systemd/system/
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/vaxilu/x-ui/main/x-ui.sh
-    chmod +x /usr/local/x-ui/x-ui.sh
-    chmod +x /usr/bin/x-ui
-    config_after_install
-
-    systemctl daemon-reload
-    systemctl enable x-ui
-    systemctl start x-ui
-    echo -e "x-ui 安装完成，面板已启动，"
-    echo -e ""
-    echo -e "x-ui 管理脚本使用方法: "
-    echo -e "----------------------------------------------"
-    echo -e "x-ui              - 显示管理菜单 (功能更多)"
-    echo -e "x-ui start        - 启动 x-ui 面板"
-    echo -e "x-ui stop         - 停止 x-ui 面板"
-    echo -e "x-ui restart      - 重启 x-ui 面板"
-    echo -e "x-ui status       - 查看 x-ui 状态"
-    echo -e "x-ui enable       - 设置 x-ui 开机自启"
-    echo -e "x-ui disable      - 取消 x-ui 开机自启"
-    echo -e "x-ui log          - 查看 x-ui 日志"
-    echo -e "x-ui v2-ui        - 迁移本机器的 v2-ui 账号数据至 x-ui"
-    echo -e "x-ui update       - 更新 x-ui 面板"
-    echo -e "x-ui install      - 安装 x-ui 面板"
-    echo -e "x-ui uninstall    - 卸载 x-ui 面板"
-    echo -e "----------------------------------------------"
-
-
-yellow "开始安装"
-install_base
-install_x-ui
+    yellow "正在从github下载，请耐心等待······"
+    wget -N --no-check-certificate -O /root/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
+    tar zxvf ddns.tar.gz
+    cd /root/ddns
+    sudo ./ddns-go -s install
+    check_enabled "ddns-go"
+        if [[ $? == 1 ]]; then
+            yellow "ddns已经安装"
+        else red "安装错误,重新运行脚本多尝试几次" && exit 1
+        fi
+    check_status "ddns-go"
+        if [[ $? == 1 ]]; then
+            yellow "ddns已在运行,访问ip:2017即可访问ddns面板
+使用方法 systemctl [start|restart|stop|status]" ddns-go
+        else red "安装错误,重新运行脚本多尝试几次" && exit 1
+    fi
+    
 }
+
 
 # 菜单
 Show_Menu() {
@@ -321,6 +353,7 @@ Show_Menu() {
     yellow "26.BBr for openvz"
     yellow "27.下载XrayR"
     yellow "28.安装xraya面板"
+    yellow "29.安装DDNS-GO"
     echo -e ""
     yellow "31.ServerStatus-Hotaru服务端"
     yellow "32.ServerStatus-Hotaru客户端"
@@ -350,6 +383,7 @@ Show_Menu() {
         26) wget --no-cache -O lkl-haproxy.sh https://github.com/mzz2017/lkl-haproxy/raw/master/lkl-haproxy.sh && bash lkl-haproxy.sh ;;
         27) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
         28) Install_Xraya ;;
+        29) Install_DDNS ;;
         31) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh s ;;
         32) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh c ;;
         41) Install_BT;;
