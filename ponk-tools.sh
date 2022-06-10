@@ -325,7 +325,7 @@ Install_DDNS() {
         fi
     check_status "ddns-go"
         if [[ $? == 1 ]]; then
-            yellow "ddns已在运行,访问ip:2017即可访问ddns面板
+            yellow "ddns已在运行,访问ip:9876即可访问ddns面板
 使用方法 systemctl [start|restart|stop|status]" ddns-go
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
