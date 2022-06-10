@@ -82,7 +82,7 @@ check_enabled() {
 }
 
 # check root
-#[[ $EUID -ne 0 ]] && echo -e red "错误：必须使用root用户运行此脚本！\n" && exit 1
+#[[ $EUID -ne 0 ]] && red "错误：必须使用root用户运行此脚本！\n" && exit 1
 # 下载脚本
 #Add_Shell() {
 #   wget -O /usr/bin/ponk -N --no-check-certificate https://raw.githubusercontent.com/ppoonk/all/master/ponk-tools.sh
@@ -362,6 +362,18 @@ Install_V2board() {
 
 }
 
+Install_Termux_Linux() {
+   
+    apt install proot git python -y
+    #下载linux
+    git clone https://gitee.com/poiuty123/termux.git && cd ~/termux && python termux-install.py
+    #启动方法
+    echo -e "如果安装的是debian，使用  cd ~/Termux-Linux/Debian && ./start-debian.sh
+    如果安装的是ubuntu，使用  cd ~/Termux-Linux/Ubuntu && ./start-ubuntu.sh
+    其他系统启动命令类似"
+
+    cd ~/Termux-Linux/Debian && ./start-debian.sh
+}
 
 # 菜单
 Show_Menu() {
@@ -395,6 +407,7 @@ Show_Menu() {
     yellow "44.安装v2board面板"
     echo -e ""
     yellow "52.卸载apache2"
+    yellow "53.安卓termux安装linux"
     yellow "0.回车或输入0退出"
     echo -e ""
     read -p "请输入脚本序号:" Input
@@ -423,6 +436,7 @@ Show_Menu() {
         44) Install_V2board ;;
         51) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
         52) uninstall_apache2 ;;
+        53) Install_Termux_Linux ;;
         
     esac
 
