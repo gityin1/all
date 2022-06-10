@@ -371,8 +371,7 @@ Install_Termux_Linux() {
     echo -e "如果安装的是debian，使用  cd ~/Termux-Linux/Debian && ./start-debian.sh
     如果安装的是ubuntu，使用  cd ~/Termux-Linux/Ubuntu && ./start-ubuntu.sh
     其他系统启动命令类似"
-
-    cd ~/Termux-Linux/Debian && ./start-debian.sh
+    #cd ~/Termux-Linux/Debian && ./start-debian.sh
 }
 
 # 菜单
