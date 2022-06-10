@@ -82,7 +82,7 @@ check_enabled() {
 }
 
 # check root
-[[ $EUID -ne 0 ]] && echo -e red "错误：必须使用root用户运行此脚本！\n" && exit 1
+#[[ $EUID -ne 0 ]] && echo -e red "错误：必须使用root用户运行此脚本！\n" && exit 1
 # 下载脚本
 #Add_Shell() {
 #   wget -O /usr/bin/ponk -N --no-check-certificate https://raw.githubusercontent.com/ppoonk/all/master/ponk-tools.sh
@@ -314,24 +314,40 @@ Install_DDNS() {
     fi
     yellow "正在从github下载，请耐心等待······"
     wget -N --no-check-certificate -O /root/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
-    mkdir /root/ddns
-    tar zxvf ddns.tar.gz -C /root/ddns
-    cd /root/ddns
-    sudo ./ddns-go -s install
-<<!EOF!    check_enabled "ddns-go"
-        if [[ $? == 1 ]]; then
-            yellow "ddns已经安装"
-        else red "安装错误,重新运行脚本多尝试几次" && exit 1
-        fi
+    mkdir /usr/local/ddns-go
+    tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
+    rm -f /root/ddns.tar.gz
+    #cd /root/ddns
+    #sudo ./ddns-go -s install
+    # 添加service
+    systemctl stop ddns-go
+    local Name="ddns-go"
+    rm -rf /etc/systemd/system/$Name.service
+    WorkingDirectory="/usr/local/$Name"
+    ExecStart="/usr/local/$Name/$Name"
+    echo -e "[Unit]\nDescription=$Name Service\nAfter=network.target
+    Wants=network.target
+
+    [Service]
+    Type=simple
+    WorkingDirectory=$WorkingDirectory
+    ExecStart=$ExecStart
+
+    [Install]
+    WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
+    systemctl daemon-reload
+    systemctl enable $Name
+    systemctl start $Name
+    systemctl status $Name
     check_status "ddns-go"
         if [[ $? == 1 ]]; then
-            yellow "ddns已在运行,访问ip:9876即可访问ddns面板
+            yellow "ddns已在运行,访问ip:9876即可访问ddns-go面板
 使用方法 systemctl [start|restart|stop|status] ddns-go"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
-    
 }
-!EOF!
+
+
 
 # 安装v2board面板
 Install_V2board() {
