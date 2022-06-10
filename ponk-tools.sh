@@ -157,7 +157,7 @@ Install_xui_cn() {
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
     arch1="amd64"
 elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
-    arc1h="arm64"
+    arch1="arm64"
 elif [[ $arch == "s390x" ]]; then
     arch1="s390x"
 else
@@ -165,7 +165,7 @@ else
     red "检测架构失败，使用默认架构: ${arch}"
 fi
 
-echo "架构: ${arch}"
+echo "架构: ${arch1}"
 
 if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
     echo "本软件不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
@@ -318,7 +318,7 @@ Install_DDNS() {
     tar zxvf ddns.tar.gz -C /root/ddns
     cd /root/ddns
     sudo ./ddns-go -s install
-    check_enabled "ddns-go"
+<<!EOF!    check_enabled "ddns-go"
         if [[ $? == 1 ]]; then
             yellow "ddns已经安装"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
@@ -326,11 +326,12 @@ Install_DDNS() {
     check_status "ddns-go"
         if [[ $? == 1 ]]; then
             yellow "ddns已在运行,访问ip:9876即可访问ddns面板
-使用方法 systemctl [start|restart|stop|status]" ddns-go
+使用方法 systemctl [start|restart|stop|status] ddns-go"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
     
 }
+!EOF!
 
 # 安装v2board面板
 Install_V2board() {
