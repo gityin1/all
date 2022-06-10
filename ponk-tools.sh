@@ -314,7 +314,8 @@ Install_DDNS() {
     fi
     yellow "正在从github下载，请耐心等待······"
     wget -N --no-check-certificate -O /root/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
-    tar zxvf ddns.tar.gz
+    mkdir /root/ddns
+    tar zxvf ddns.tar.gz -C /root/ddns
     cd /root/ddns
     sudo ./ddns-go -s install
     check_enabled "ddns-go"
@@ -329,6 +330,19 @@ Install_DDNS() {
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
     
+}
+
+# 安装v2board面板
+Install_V2board() {
+    if [[ $Cmd_Type == "centos" ]]; then
+        yum -y install git wget 
+        git clone https://gitee.com/gz1903/v2board_install.git /usr/local/src/v2board_install 
+        cd /usr/local/src/v2board_install && chmod +x v2board_install.sh && ./v2board_install.sh
+        
+    else 
+        red "仅支持centos系统！！！"
+    fi
+
 }
 
 
@@ -361,7 +375,7 @@ Show_Menu() {
     yellow "41.安装宝塔770"
     yellow "42.将xxx写入systemctl服务"
     yellow "43.安装docker"
-    yellow "44.安装docker-sspanel"
+    yellow "44.安装v2board面板"
     echo -e ""
     yellow "52.卸载apache2"
     yellow "0.回车或输入0退出"
@@ -389,6 +403,7 @@ Show_Menu() {
         41) Install_BT;;
         42) Add_Systemctl_Service ;;
         43) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
+        44) Install_V2board ;;
         51) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
         52) uninstall_apache2 ;;
         
