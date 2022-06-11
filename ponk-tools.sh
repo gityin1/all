@@ -98,7 +98,7 @@ Return_Show_Menu() {
 Show_Information() {
     blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
    
-    echo -e "系统:$(blue "$release" $lbit位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt") 已用ram："   
+    echo -e "系统:$(blue "$release $lbit"位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt")"   
 
     blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
 }
@@ -203,7 +203,7 @@ install_x-ui() {
     systemctl stop x-ui
     cd /usr/local/
     url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-${arch1}.tar.gz"
-    echo -e "开始安装 x-ui v"
+    echo -e "开始安装 x-ui "
     wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch1}.tar.gz ${url}
     if [[ -e /usr/local/x-ui/ ]]; then
         rm /usr/local/x-ui/ -rf
@@ -374,12 +374,113 @@ Install_Termux_Linux() {
     #cd ~/Termux-Linux/Debian && ./start-debian.sh
 }
 
+
+# 钉钉内网穿透
+Ding_Tunnel() {
+
+    local type1=""
+    if [[ $arch == "amd64" || $arch == "x64" || $arch == "x86_64" ]]; then
+        type1="linux"
+    elif [[ $arch == "arm64" || $arch == "aarch64" || $arch == "arm" || $arch == "armv7" || $arch == "armv6" || $arch == "armv6" || $arch == "armv7l"
+]]; then
+        type1="linux_arm"
+    elif [[ $arch == "x86" ]]; then
+        type1="linux_386"
+    else red "不支持您的版本，或者手动去github库下载---https://github.com/open-dingtalk/dingtalk-pierced-client" 
+    fi
+
+    if [[ $Cmd_Type == "debian" ]]; then
+       # apt update 
+        apt install git screen -y
+    elif [[ $Cmd_Type == "centos" ]]; then
+       # yum update 
+        yum install screen git -y
+    else red "错误,本脚本仅适用于centos，ununtu和debian"
+    fi
+
+
+    Download_Ding_Tunnel() {
+
+        #git clone https://github.com/open-dingtalk/dingtalk-pierced-client.git 
+    
+        git clone  https://hub.fastgit.xyz/open-dingtalk/dingtalk-pierced-client.git /root/ding_tunnel
+        echo && echo -n -e "下载完成，按回车返回主菜单: " && read temp
+        Show_Ding_Menu
+    }
+
+
+    Uninstall_Ding_Tunnel() {
+        rm -rf /root/ding_tunnel
+    }
+
+
+    local ding_status=""
+    Check_Ding_Tunnel() {
+        if  [ -d /root/ding_tunnel ]; then
+            ding_status="已下载"
+        else ding_status="未下载"
+        fi
+    }
+
+    Show_Ding_Tunnel() {
+        
+        echo -e "钉钉已存在隧道："
+        yellow "$(screen -ls | grep ding)"
+        echo && echo -n -e "按回车返回主菜单: " && read temp
+        Show_Ding_Menu
+    }
+    Add_Ding_Tunnal() {
+        cd /root/ding_tunnel/$type1
+        chmod 777 ./ding
+        read -p "请输入域名前缀，该前缀将会匹配到“vaiwan.cn”前面，例如你输入的是abc，启动工具后会将abc.vaiwan.cn映射到本地:"  Input_Sub
+        read -p "请输入需要映射的端口:"  Input_Port
+        screen -USdm ding${Input_Sub} ./ding -config=./ding.cfg -subdomain=$Input_Sub $Input_Port
+        yellow "访问地址：${Input_Sub}.vaiwan.cn 端口为：$Input_Port"
+        echo && echo -n -e "按回车返回主菜单: " && read temp
+        Show_Ding_Menu
+    }
+    Delete_Ding_Tunnel() {
+        echo -e "钉钉已存在隧道："
+        yellow "$(screen -ls | grep ding)"
+        read -p "输入需要删除的隧道：" Del_Ding_Tunnel_Name
+        screen -S $Del_Ding_Tunnel_Name -X quit
+
+        echo && echo -n -e "$(yellow "$Del_Ding_Tunnel_Name")已被删除，按回车返回主菜单: " && read temp
+        Show_Ding_Menu
+
+    }
+    Show_Ding_Menu() {
+	clear 
+    Check_Ding_Tunnel
+	echo -e "钉钉内网穿透：$(yellow "$ding_status")"
+	echo -e "钉钉隧道列表：$(yellow "$(screen -ls | grep ding)")"
+	echo "            "
+	echo "1. 下载钉钉内网穿透"
+    echo "2. 新增钉钉隧道"
+    echo "3. 删除钉钉隧道"
+	#echo "4. 显示钉钉隧道列表"
+	echo "4. 卸载钉钉内网穿透"
+	echo "0. 退出"
+	echo "          "
+	read -p "请输入选项:" Input
+	case "$Input" in
+		1) Download_Ding_Tunnel ;;
+		2) Add_Ding_Tunnal ;;
+        3) Delete_Ding_Tunnel ;;
+		#4) Show_Ding_Tunnel ;;
+		4) Uninstall_Ding_Tunnel ;;
+		*) exit 1 ;;
+	esac
+}
+Show_Ding_Menu
+}
+
 # 菜单
 Show_Menu() {
     clear
     clear
-#   Show_Information
-    yellow "直接在命令行输入ponk即可运行本脚本。请输入需要执行的序号："
+    Show_Information
+   
     echo -e ""
     yellow "11.国内机更换github hosts"
     yellow "12.bench.sh"          
@@ -407,6 +508,7 @@ Show_Menu() {
     echo -e ""
     yellow "52.卸载apache2"
     yellow "53.安卓termux安装linux"
+    yellow "54.钉钉内网穿透"
     yellow "0.回车或输入0退出"
     echo -e ""
     read -p "请输入脚本序号:" Input
@@ -436,6 +538,7 @@ Show_Menu() {
         51) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
         52) uninstall_apache2 ;;
         53) Install_Termux_Linux ;;
+        54) Ding_Tunnel ;;
         
     esac
 
