@@ -96,11 +96,11 @@ Return_Show_Menu() {
 }
 # 显示info
 Show_Information() {
-    blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
+    blue "—————————————————————————————————————————————"
    
     echo -e "系统:$(blue "$release $lbit"位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt")"   
 
-    blue "————————————————————————————————————————————————————————————————————————————————————————————————————————"
+    blue "—————————————————————————————————————————————"
 }
 
 # 添加服务
@@ -121,13 +121,25 @@ Add_Systemctl_Service() {
 
 # 安装宝塔
 Install_BT() {
-    wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && sudo bash install.sh
+    yellow "
+    1.安装宝塔770
+    2.卸载宝塔
+    3.安装mdserver-web
+    4.卸载mdserver-web
+    5.回车取消"
+    read -p "请输入序号：" BT_input
+    case $BT_input in
+    1) wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh && sudo bash install.sh
     wget http://download.bt.cn/install/update/LinuxPanel-7.7.0.zip && unzip LinuxPanel-7.7.0.zip
     cd /root/panel && bash update.sh
     mv /www/server/panel/data/bind.pl bind.pl1
-    bt
+    bt ;;
+    2) /etc/init.d/bt stop && chkconfig --del bt && rm -f /etc/init.d/bt && rm -rf /www/server/panel ;;
+    3) curl -fsSL  https://gitee.com/midoks/mdserver-web/raw/master/scripts/install_cn.sh | bash ;;
+    4) /etc/init.d/mw stop && rm -rf /www/server/mdserver-web ;;
+    5) exit 0;;
+    esac
 }
-
 # 卸载apache2
 uninstall_apache2() {
     
@@ -154,33 +166,33 @@ uninstall_apache2() {
 
 Install_xui_cn() {
     local arch1=""
-if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
+    if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
     arch1="amd64"
-elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
     arch1="arm64"
-elif [[ $arch == "s390x" ]]; then
+    elif [[ $arch == "s390x" ]]; then
     arch1="s390x"
-else
+    else
     arch1="amd64"
     red "检测架构失败，使用默认架构: ${arch}"
-fi
+    fi
 
-echo "架构: ${arch1}"
+    echo "架构: ${arch1}"
 
-if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
+    if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
     echo "本软件不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     exit -1
-fi
+    fi
 
 
-install_base() {
+    install_base() {
     if [[ x"$Cmd_Type" == x"centos" ]]; then
         yum install wget curl tar -y
     else
         apt install wget curl tar -y
     fi
-}
-config_after_install() {
+    }
+    config_after_install() {
     yellow "出于安全考虑，安装完成后需要强制修改端口与账户密码"
     read -p "请设置您的账户名:" config_account
     yellow "您的账户名将设定为:${config_account}"
@@ -198,8 +210,8 @@ config_after_install() {
     else
         red "已取消,所有设置项均为默认设置,请及时修改"
     fi
-}
-install_x-ui() {
+    }
+    install_x-ui() {
     systemctl stop x-ui
     cd /usr/local/
     url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-${arch1}.tar.gz"
@@ -238,11 +250,11 @@ install_x-ui() {
     echo -e "x-ui install      - 安装 x-ui 面板"
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
     echo -e "----------------------------------------------"
-}  
+    }  
 
-yellow "开始安装"
-install_base
-install_x-ui
+    yellow "开始安装"
+    install_base
+    install_x-ui
 }
 
 
@@ -342,10 +354,10 @@ Install_DDNS() {
     check_status "ddns-go"
         if [[ $? == 1 ]]; then
             yellow "ddns已在运行,访问ip:9876即可访问ddns-go面板
-使用方法 systemctl [start|restart|stop|status] ddns-go"
+    使用方法 systemctl [start|restart|stop|status] ddns-go"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
-}
+    }
 
 
 
@@ -360,7 +372,7 @@ Install_V2board() {
         red "仅支持centos系统！！！"
     fi
 
-}
+    }
 
 Install_Termux_Linux() {
    
@@ -411,6 +423,7 @@ Ding_Tunnel() {
 
     Uninstall_Ding_Tunnel() {
         rm -rf /root/ding_tunnel
+        yellow "钉钉内网穿透已卸载"
     }
 
 
@@ -430,14 +443,19 @@ Ding_Tunnel() {
         Show_Ding_Menu
     }
     Add_Ding_Tunnal() {
+        if [[ $ding_status == "已安装" ]]; then
         cd /root/ding_tunnel/$type1
         chmod 777 ./ding
         read -p "请输入域名前缀，该前缀将会匹配到“vaiwan.cn”前面，例如你输入的是abc，启动工具后会将abc.vaiwan.cn映射到本地:"  Input_Sub
         read -p "请输入需要映射的端口:"  Input_Port
         screen -USdm ding${Input_Sub} ./ding -config=./ding.cfg -subdomain=$Input_Sub $Input_Port
         yellow "访问地址：${Input_Sub}.vaiwan.cn 端口为：$Input_Port"
-        echo && echo -n -e "按回车返回主菜单: " && read temp
+        echo && yellow "按回车返回主菜单: " && read temp
         Show_Ding_Menu
+        else red "请先安装钉钉内网穿透"
+        echo && yellow "按回车返回主菜单: " && read temp
+        Show_Ding_Menu
+        fi
     }
     Delete_Ding_Tunnel() {
         echo -e "钉钉已存在隧道："
@@ -500,8 +518,6 @@ Uninstall_shc1() {
 }
 Show_shc_menu() {
 
-
-    
 echo -e "
 常用参数：
 -e  date （指定过期日期）
@@ -544,6 +560,35 @@ Unshc() {
 
 }
 
+BBR_series() {
+    clear
+    yellow "
+    1.BBR
+    2.BBr for openvz
+    3.回车取消并退出"
+    read -p "输入序号：" BBR_input
+    case $BBR_input in
+    1) wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" 
+    chmod +x tcp.sh && ./tcp.sh ;;
+    2) wget --no-cache -O lkl-haproxy.sh https://github.com/mzz2017/lkl-haproxy/raw/master/lkl-haproxy.sh
+    bash lkl-haproxy.sh ;;
+    *) exit 0;;
+    esac
+
+}
+XUI_series() {
+    clear
+    yellow "
+    1.x-ui原版
+    2.x-ui国内机适用
+    3.回车取消并退出"
+    read -p "输入序号：" XUI_input
+    case $XUI_input in
+    1) bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh) ;;
+    2) Install_xui_cn ;;
+    *) exit 0;;
+    esac
+}
 
 
 # 菜单
@@ -553,69 +598,79 @@ Show_Menu() {
     Show_Information
    
     echo -e ""
-    yellow "11.国内机更换github hosts"
-    yellow "12.bench.sh"          
-    yellow "13.三网测速 "           
-    yellow "14.路由回程测试"             
-    yellow "15.warp"
+    yellow "1.国内机更换github hosts"
+    yellow "2.bench.sh"          
+    yellow "3.三网测速 "           
+    yellow "4.路由回程测试"             
+    yellow "5.warp"
     echo -e ""
-    yellow "21.安装x-ui"
-    yellow "22.安装x-ui国内机适用"
-    yellow "23.mack-a八合一脚本"
 
-    yellow "25.BBR"
-    yellow "26.BBr for openvz"
-    yellow "27.下载XrayR"
-    yellow "28.安装xraya面板"
-    yellow "29.安装DDNS-GO"
+    yellow "6.安装x-ui"
+    yellow "7.mack-a八合一脚本"
+    yellow "8.BBR"
+    yellow "9.下载XrayR"
+    yellow "10.安装xraya面板"
     echo -e ""
-    yellow "31.ServerStatus-Hotaru服务端"
-    yellow "32.ServerStatus-Hotaru客户端"
-    yellow "33.shc加密script"
-    yellow "34.unshc解密script"
+
+    yellow "11.安装DDNS-GO面板"
+    yellow "12.卸载apache2"
+    yellow "13.安卓termux安装linux"
+    yellow "14.钉钉内网穿透"
+    yellow "15.Argo Tunnel内网穿透"
     echo -e ""
-    yellow "41.安装宝塔770"
-    yellow "42.将xxx写入systemctl服务"
-    yellow "43.安装docker"
-    yellow "44.安装v2board面板"
+
+    yellow "16.ServerStatus-Hotaru"
+    yellow "17.shc加密script"
+    yellow "18.unshc解密script"
+    yellow "19.宝塔bt面板 & mdserver-web面板"
+    yellow "20.写入systemctl服务"
     echo -e ""
-    yellow "52.卸载apache2"
-    yellow "53.安卓termux安装linux"
-    yellow "54.钉钉内网穿透"
-    yellow "55.Argo Tunnel内网穿透"
+
+    yellow "21.安装docker"
+    yellow "22.安装v2board面板"
+    echo -e ""
+
     yellow "0.回车或输入0退出"
     echo -e ""
     read -p "请输入脚本序号:" Input
     
     case "$Input" in
         0) exit 0 ;;
-        11) sed -i "/# GitHub520 Host Start/Q" /etc/hosts && curl https://raw.hellogithub.com/hosts >> /etc/hosts ;;
-        12) curl -so- 86.re/bench.sh | bash ;;
-        13) bash <(curl -Lso- https://git.io/Jlkmw);;
-        14) wget https://raw.githubusercontent.com/nanqinlang-script/testrace/master/testrace.sh && bash testrace.sh;;
-        15) wget -N https://raw.githubusercontent.com/fscarmen/warp/main/menu.sh && bash menu.sh ;;
-        21) bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh) ;;
-        22) Install_xui_cn ;;
-        23) wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh ;;
+        1) sed -i "/# GitHub520 Host Start/Q" /etc/hosts && curl https://raw.hellogithub.com/hosts >> /etc/hosts ;;
+        2) curl -so- 86.re/bench.sh | bash ;;
+        3) bash <(curl -Lso- https://git.io/Jlkmw);;
+        4) wget https://raw.githubusercontent.com/nanqinlang-script/testrace/master/testrace.sh && bash testrace.sh;;
+        5) wget -N https://raw.githubusercontent.com/fscarmen/warp/main/menu.sh && bash menu.sh ;;
 
-        25) wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh ;;
-        26) wget --no-cache -O lkl-haproxy.sh https://github.com/mzz2017/lkl-haproxy/raw/master/lkl-haproxy.sh && bash lkl-haproxy.sh ;;
-        27) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
-        28) Install_Xraya ;;
-        29) Install_DDNS ;;
-        31) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh s ;;
-        32) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh && bash status.sh c ;;
-        33) Install_shc ;;
-        34) Unshc ;;
-        41) Install_BT;;
-        42) Add_Systemctl_Service ;;
-        43) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
-        44) Install_V2board ;;
-        51) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
-        52) uninstall_apache2 ;;
-        53) Install_Termux_Linux ;;
-        54) Ding_Tunnel ;;
-        55) wget -N https://raw.githubusercontents.com/Misaka-blog/argo-tunnel-script/master/argo.sh && bash argo.sh ;;
+        6) XUI_series ;;
+        7) wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh ;;
+        8) BBR_series;;
+        9) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
+        10) Install_Xraya ;;
+
+        11) Install_DDNS ;;
+        12) uninstall_apache2 ;;
+        13) Install_Termux_Linux ;;
+        14) Ding_Tunnel ;;
+        15) wget -N https://raw.githubusercontents.com/Misaka-blog/argo-tunnel-script/master/argo.sh && bash argo.sh ;;
+
+        16) wget https://raw.githubusercontent.com/cokemine/ServerStatus-Hotaru/master/status.sh 
+        yellow "
+        ServerStatus-Hotaru探针脚本下载完毕
+        服务端：bash status.sh s
+        客户端：bash status.sh c
+        " ;;
+        17) Install_shc ;;
+        18) Unshc ;;
+        19) Install_BT;;
+        20) Add_Systemctl_Service ;;
+
+        21) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
+        22) Install_V2board ;;
+
+
+
+       
         
     esac
 
