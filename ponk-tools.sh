@@ -258,8 +258,9 @@ Install_xui_cn() {
 }
 
 
-# 安装xraya
-Install_Xraya() {
+# 安装v2raya
+V2raya() {
+    Install_V2raya() {
     #local arch=$(uname -m)
     local arch1=""
     local arch2=""
@@ -275,43 +276,83 @@ Install_Xraya() {
     else
         red "不支持的arch" && exit 1
     fi
-
-    wget -N --no-check-certificate -O /root/xray.zip https://download.fastgit.org/XTLS/Xray-core/releases/download/latest/Xray-linux-${arch2}.zip
+    cd /root
+    if [[ -s /root/xray.zip ]]; then
+        yellow "xray内核已下载"
+    else
+        yellow "正在下载xray内核"
+        wget -N --no-check-certificate -O /root/xray.zip https://download.fastgit.org/XTLS/Xray-core/releases/download/v1.5.5/Xray-linux-${arch2}.zip
+    fi
     unzip -d ./xray -o xray.zip
-    #rm -f xray.zip
     chmod +x xray/*
     mv xray/xray /usr/local/bin/xray
     mv xray /usr/local/share/
-    mkdir  /usr/local/xraya
-    wget -N --no-check-certificate -O /usr/local/xraya/xraya https://download.fastgit.org/v2rayA/v2rayA/releases/download/v1.5.7/v2raya_linux_${arch1}_1.5.7
-    chmod +x /usr/local/xraya/xraya
+    mkdir  /usr/local/v2raya
+    if [[ -s /root/v2raya ]]; then
+        yellow "v2raya已下载"
+        mv /root/v2raya /usr/local/v2raya/v2raya
+        chmod +x /usr/local/v2raya/v2raya
+    else
+        yellow "正在下载v2raya"
+        wget -N --no-check-certificate -O /root/v2raya https://download.fastgit.org/v2rayA/v2rayA/releases/download/v1.5.7/v2raya_linux_${arch1}_1.5.7
+        mv /root/v2raya /usr/local/v2raya/v2raya
+        chmod +x /usr/local/v2raya/v2raya
+    fi
+
     # 添加service
-    Name="xraya"
-    rm -rf /etc/systemd/system/$Name.service
-    WorkingDirectory="/usr/local/xraya"
-    ExecStart="/usr/local/xraya/xraya"
-    echo -e "[Unit]\nDescription=$name Service\nAfter=network.target
-    Wants=network.target
+    local Name="v2raya"
+    WorkingDirectory="/usr/local/v2raya"
+    ExecStart="/usr/local/v2raya/v2raya"
+    echo -e "[Unit]\nDescription=$name Service
+After=network.target
+Wants=network.target
 
-    [Service]
-    Type=simple
-    WorkingDirectory=$WorkingDirectory
-    ExecStart=$ExecStart
+[Service]
+Type=simple
+WorkingDirectory=$WorkingDirectory
+ExecStart=$ExecStart
 
-    [Install]
-    WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
+[Install]
+WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
     systemctl daemon-reload
     systemctl enable $Name
     systemctl start $Name
-    yellow "使用方法 systemctl [start|restart|stop|status] $Name 
-    $Name服务状态如下："
-    systemctl status $Name
+    check_status "v2raya"
+        if [[ $? == 1 ]]; then
+            yellow "
+            v2raya已在运行,访问ip:2017即可访问v2raya面板
+            使用方法 systemctl [start|restart|stop|status] v2raya"
+        else red "安装错误,重新运行脚本多尝试几次" && exit 1
+    fi
+}
+    Uninstall_V2raya() {
+    yellow "开始卸载..."
+    systemctl stop v2raya
+    rm -rf /usr/local/share/xray
+    rm -rf /usr/local/bin/xray
+    rm -rf /usr/local/v2raya
+    rm -rf /etc/systemd/v2raya.service
+    systemctl daemon-reload
+    yellow "v2raya卸载完成"
+
+}
+    clear
+    yellow "
+        1.安装v2raya
+        2.卸载v2raya
+        3.回车取消"
+    read -p "选择序号：" V2raya_input
+    case $V2raya_input in
+        1) Install_V2raya ;;
+        2) Uninstall_V2raya ;;
+        3) exit 0 ;;
+    esac
 }
 
 
 #安装DDNS-GO
-Install_DDNS() {
-
+DDNS_go() {
+    Install_DDNS_go() {
     local arch1=""
     if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
         arch1="x86_64"
@@ -324,17 +365,19 @@ Install_DDNS() {
     else
         red "不支持的arch" && exit 1
     fi
-    yellow "正在从github下载，请耐心等待······"
-    wget -N --no-check-certificate -O /root/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
+
+    if [[ -s /root/ddns.tar.gz ]]; then
+        yellow "ddns-go已下载"
+    else
+        yellow "正在从github下载，请耐心等待······"
+        wget -N --no-check-certificate -O /root/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
+    fi
     mkdir /usr/local/ddns-go
     tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
-    rm -f /root/ddns.tar.gz
-    #cd /root/ddns
-    #sudo ./ddns-go -s install
+    #rm -f /root/ddns.tar.gz
     # 添加service
     systemctl stop ddns-go
     local Name="ddns-go"
-    rm -rf /etc/systemd/system/$Name.service
     WorkingDirectory="/usr/local/$Name"
     ExecStart="/usr/local/$Name/$Name"
     echo -e "[Unit]\nDescription=$Name Service\nAfter=network.target
@@ -350,16 +393,38 @@ Install_DDNS() {
     systemctl daemon-reload
     systemctl enable $Name
     systemctl start $Name
-    systemctl status $Name
+    
     check_status "ddns-go"
         if [[ $? == 1 ]]; then
-            yellow "ddns已在运行,访问ip:9876即可访问ddns-go面板
-    使用方法 systemctl [start|restart|stop|status] ddns-go"
+            yellow "
+            ddns-go已在运行,访问ip:9876即可访问ddns-go面板
+            使用方法 systemctl [start|restart|stop|status] ddns-go"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
     }
 
+    Uninstall_DDNS_go() {
+        yellow "正在卸载..."
+        systemctl stop ddns-go
+        rm -rf /etc/systemd/system/ddns-go.service
+        rm -rf /usr/local/ddns-go
+        rm -rf /root/.ddns_go_config.yaml
+        yellow "ddns-go卸载完成"
 
+    }
+    clear
+    yellow "
+        1.安装ddns-go
+        2.卸载ddns-go
+        3.回车取消"
+    read -p "选择序号：" DDNS_go_input
+    case $DDNS_go_input in
+        1) Install_DDNS_go ;;
+        2) Uninstall_DDNS_go ;;
+        3) exit 0 ;;
+    esac
+
+}
 
 # 安装v2board面板
 Install_V2board() {
@@ -609,7 +674,7 @@ Show_Menu() {
     yellow "7.mack-a八合一脚本"
     yellow "8.BBR"
     yellow "9.下载XrayR"
-    yellow "10.安装xraya面板"
+    yellow "10.安装v2raya面板"
     echo -e ""
 
     yellow "11.安装DDNS-GO面板"
@@ -646,9 +711,9 @@ Show_Menu() {
         7) wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh ;;
         8) BBR_series;;
         9) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
-        10) Install_Xraya ;;
+        10) V2raya ;;
 
-        11) Install_DDNS ;;
+        11) DDNS_go ;;
         12) uninstall_apache2 ;;
         13) Install_Termux_Linux ;;
         14) Ding_Tunnel ;;
