@@ -1,0 +1,89 @@
+name: Build x-ui-armv7
+on:
+  workflow_dispatch:
+jobs:
+  Build:
+    name: Build x-ui-armv7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setting up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Building
+        run: |
+          sudo apt install gcc-arm-linux-gnueabihf
+          CGO_ENABLED=1 GOOS=linux GOARCH=arm GOARM=7 CC=arm-linux-gnueabihf-gcc go build main.go
+          # 在此生成一个release文件夹，用来做接下来的打包成品使用
+          mkdir release
+          cp main release/main
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+          name: x-ui-armv7 # 生成的压缩包名称
+          path: release # 需要打包的路径
+
+
+name: Build x-ui-ios
+on:
+  workflow_dispatch:
+jobs:
+  Build:
+    name: Build x-ui-ios
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setting up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Building
+        run: |
+          # sudo apt install gcc-arm-linux-gnueabihf
+          sudo apt install gcc-aarch64-linux-gnu
+          sudo apt install gccgo-aarch64-linux-gnu
+          CGO_ENABLED=1 GOOS=ios GOARCH=arm64 CC=aarch64-linux-gnu-gcc go build main.go
+          # 在此生成一个release文件夹，用来做接下来的打包成品使用
+          mkdir release
+          cp main release/main
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+          name: x-ui-ios # 生成的压缩包名称
+          path: release # 需要打包的路径
+
+
+name: Build x-ui-windows
+on:
+  workflow_dispatch:
+jobs:
+  Build:
+    name: Build x-ui-windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setting up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Building
+        run: |
+          # sudo apt install mingw-w64
+          
+          sudo apt install gcc-mingw-w64
+          CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -o main.exe main.go
+   
+          # 在此生成一个release文件夹，用来做接下来的打包成品使用
+          mkdir release
+          cp main release/main
+      - name: Uploading
+        uses: actions/upload-artifact@v1
+        with:
+          name: x-ui-windows # 生成的压缩包名称
+          path: release # 需要打包的路径
+
+
+
+
+
