@@ -278,7 +278,11 @@ Deploy_x-ui() {
     Start_deploy_x-ui() {
         apt install screen -y
         cd /usr/local/x-ui
+        /usr/local/x-ui/x-ui setting -username admin -password admin
         screen -USdm x-ui ./x-ui
+        #wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/vaxilu/x-ui/main/x-ui.sh
+        #chmod +x /usr/bin/x-ui
+        yellow "使用默认参数"
         yellow "x-ui已启动，访问IP:54321即可管理xui面板"
     }
     Stop_deploy_x-ui() {
@@ -292,7 +296,6 @@ Deploy_x-ui() {
         Stop_deploy_x-ui
         yellow "正在卸载..."
         rm -rf /usr/local/x-ui
-   
         yellow "x-ui卸载完成"
 
     }
