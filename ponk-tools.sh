@@ -64,10 +64,11 @@ fi
 # 检测是否运行
 check_status() {
     count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
+    #返回0为运行
     if [[ count -ne 0 ]]; then
-        return 1
-    else
         return 0
+    else
+        return 1
     fi
 }
 
@@ -256,7 +257,117 @@ Install_xui_cn() {
     install_base
     install_x-ui
 }
+#安卓deploy安装x-ui
+Deploy_x-ui() {
+    Download_deploy_x-ui() {
 
+    if [[ -s /usr/local/x-ui.tar.gz ]]; then
+        yellow "x-ui已下载"
+    else
+        yellow "正在从github下载，请耐心等待······"
+        url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+        wget -N --no-check-certificate -O /usr/local/x-ui.tar.gz ${url}
+    fi
+    yellow "下载完成，正在解压"
+    cd /usr/local/
+    tar zxvf x-ui.tar.gz
+    cd x-ui 
+    chmod +x x-ui bin/xray-linux-arm64
+
+    }
+    Start_deploy_x-ui() {
+        apt install screen -y
+        cd /usr/local/x-ui
+        screen -USdm x-ui ./x-ui
+        yellow "x-ui已启动，访问IP:54321即可管理xui面板"
+    }
+    Stop_deploy_x-ui() {
+        screen -S x-ui -X quit
+        xuistatus=$(ps -ef | grep "x-ui" | grep -v "grep" | awk '{print $2}')
+        kill -9 $xuistatus
+        yellow "x-ui已停止"
+    }
+
+    Uninstall_deploy_x-ui() {
+        Stop_deploy_x-ui
+        yellow "正在卸载..."
+        rm -rf /usr/local/x-ui
+   
+        yellow "x-ui卸载完成"
+
+    }
+    clear
+    yellow "
+        1.安装x-ui
+        2.卸载x-ui
+        3.回车取消"
+    read -p "选择序号：" deploy_xui_input
+    case $deploy_xui_input in
+        1) Download_deploy_x-ui && Start_deploy_x-ui ;;
+        2) Uninstall_deploy_x-ui ;;
+        3) exit 0 ;;
+    esac
+
+}
+
+Deploy_ddns_go() {
+    Download_deploy_ddns_go() {
+    local arch1=""
+    if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
+        arch1="x86_64"
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+        arch1="arm64"
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" || $arch == "armv7l" ]]; then
+        arch1="armv6"
+    elif [[ $arch == "i386"  ]]; then
+        arch1="i386"
+    else
+        red "不支持的arch" && exit 1
+    fi
+
+    if [[ -s /usr/local/ddns.tar.gz ]]; then
+        yellow "ddns-go已下载"
+    else
+        yellow "正在从github下载，请耐心等待······"
+        wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
+    fi
+    mkdir /usr/local/ddns-go
+    tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
+    }
+    Start_deploy_ddns_go() {
+        apt install screen -y
+        cd /usr/local/ddns-go
+        screen -USdm ddns ./ddns-go
+        yellow "ddns-已启动,访问IP:9876 即可管理ddns动态域名解析"
+    }
+    Stop_deploy_ddns_go() {
+        screen -S ddns -X quit
+        ddnsstatus=$(ps -ef | grep "ddns" | grep -v "grep" | awk '{print $2}')
+        kill -9 $ddnsstatus
+        yellow "ddns已停止"
+    }
+
+    Uninstall_deploy_ddns_go() {
+        Stop_deploy_ddns_go
+        yellow "正在卸载..."
+        rm -rf /usr/local/ddns-go
+        rm -rf /root/.ddns_go_config.yaml
+        yellow "ddns-go卸载完成"
+
+    }
+    clear
+    yellow "
+        1.安装ddns-go
+        2.卸载ddns-go
+        3.回车取消"
+    read -p "选择序号：" deploy_ddns_go_input
+    case $deploy_ddns_go_input in
+        1) Download_deploy_ddns_go && Start_deploy_ddns_go ;;
+        2) Uninstall_deploy_ddns_go ;;
+        3) exit 0 ;;
+    esac
+
+}
 
 # 安装v2raya
 V2raya() {
@@ -270,7 +381,7 @@ V2raya() {
     elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
         arch1="arm64"
         arch2="arm64-v8a"
-    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]]; then
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" || $arch == "armv7l" ]]; then
         arch1="arm"
         arch2="arm32-v7a"
     else
@@ -358,7 +469,7 @@ DDNS_go() {
         arch1="x86_64"
     elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
         arch1="arm64"
-    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]]; then
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" || $arch == "armv7l" ]]; then
         arch1="armv6"
     elif [[ $arch == "i386"  ]]; then
         arch1="i386"
@@ -416,12 +527,14 @@ DDNS_go() {
     yellow "
         1.安装ddns-go
         2.卸载ddns-go
-        3.回车取消"
+        3.安卓deploy安装ddns
+        4.回车取消"
     read -p "选择序号：" DDNS_go_input
     case $DDNS_go_input in
         1) Install_DDNS_go ;;
         2) Uninstall_DDNS_go ;;
-        3) exit 0 ;;
+        3) Deploy_ddns_go ;;
+        4) exit 0 ;;
     esac
 
 }
@@ -508,7 +621,7 @@ Ding_Tunnel() {
         Show_Ding_Menu
     }
     Add_Ding_Tunnal() {
-        if [[ $ding_status == "已安装" ]]; then
+        if [[ $ding_status == "已下载" ]]; then
         cd /root/ding_tunnel/$type1
         chmod 777 ./ding
         read -p "请输入域名前缀，该前缀将会匹配到“vaiwan.cn”前面，例如你输入的是abc，启动工具后会将abc.vaiwan.cn映射到本地:"  Input_Sub
@@ -646,11 +759,13 @@ XUI_series() {
     yellow "
     1.x-ui原版
     2.x-ui国内机适用
-    3.回车取消并退出"
+    3.安卓deploy安装x-ui
+    4.回车取消并退出"
     read -p "输入序号：" XUI_input
     case $XUI_input in
     1) bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh) ;;
     2) Install_xui_cn ;;
+    3) Deploy_x-ui ;;
     *) exit 0;;
     esac
 }
@@ -731,9 +846,7 @@ Show_Menu() {
         20) Add_Systemctl_Service ;;
 
         21) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
-        22) Install_V2board ;;
-
-
+        22) Install_V2board ;
 
        
         
