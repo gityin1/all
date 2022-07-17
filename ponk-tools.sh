@@ -304,13 +304,17 @@ Deploy_x-ui() {
     clear
     yellow "
         1.安装x-ui
-        2.卸载x-ui
-        3.回车取消"
+        2.启动x-ui
+        3.停止x-ui
+        4.卸载x-ui
+        5.回车取消"
     read -p "选择序号：" deploy_xui_input
     case $deploy_xui_input in
         1) Download_deploy_x-ui && Start_deploy_x-ui ;;
-        2) Uninstall_deploy_x-ui ;;
-        3) exit 0 ;;
+        2) Start_deploy_x-ui ;;
+        3) Stop_deploy_x-ui ;;
+        4) Uninstall_deploy_x-ui ;;
+        5) exit 0 ;;
     esac
 
 }
