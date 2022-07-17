@@ -261,18 +261,20 @@ Install_xui_cn() {
 Deploy_x-ui() {
     Download_deploy_x-ui() {
 
+    # arm32位和arm64位下载地址
+    [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    [[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
     if [[ -s /usr/local/x-ui.tar.gz ]]; then
         yellow "x-ui已下载"
     else
         yellow "正在从github下载，请耐心等待······"
-        url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
         wget -N --no-check-certificate -O /usr/local/x-ui.tar.gz ${url}
     fi
     yellow "下载完成，正在解压"
     cd /usr/local/
     tar zxvf x-ui.tar.gz
     cd x-ui 
-    chmod +x x-ui bin/xray-linux-arm64
+    chmod +x x-ui bin/*
 
     }
     Start_deploy_x-ui() {
@@ -328,14 +330,17 @@ Deploy_ddns_go() {
         red "不支持的arch" && exit 1
     fi
 
-    if [[ -s /usr/local/ddns.tar.gz ]]; then
+    if [[ -f /usr/local/ddns.tar.gz ]]; then
         yellow "ddns-go已下载"
     else
         yellow "正在从github下载，请耐心等待······"
-        wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.0/ddns-go_3.7.0_Linux_${arch1}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://github.com/jeessy2/ddns-go/releases/download/v3.7.2/ddns-go_3.7.2_Linux_${arch1}.tar.gz
     fi
+    rm -rf /usr/local/ddns-go
     mkdir /usr/local/ddns-go
     tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
+    rm -rf /usr/local/ddns.tar.gz
+
     }
     Start_deploy_ddns_go() {
         apt install screen -y
