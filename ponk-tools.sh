@@ -2,107 +2,129 @@
 
 green() {
 	echo -e "\033[32m\033[01m$1\033[0m"
-}
+    }
 
 red() {
 	echo -e "\033[31m\033[01m$1\033[0m"
-}
+    }
 
 yellow() {
 	echo -e "\033[33m\033[01m$1\033[0m"
-}
+    }
 
 blue() {
     echo -e "\033[36m\033[01m$1\033[0m"
-}
+    }
 
 # 架构arch (x86_64,x64,amd64,aarch64,arm64,arm,s390x)
 arch=$(uname -m)
 <<!EOF!
-if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
-    arch="amd64"
-elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
-    arch="arm64"
-elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]];then
-    arch="arm"
-elif [[ $arch == "s390x" ]]; then
-    arch="s390x"
-else
-    red "未知arch"
+    if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
+        arch="amd64"
+    elif [[ $arch == "aarch64" || $arch == "arm64" ]]; then
+        arch="arm64"
+    elif [[ $arch == "arm"  || $arch == "armv7" || $arch == "armv6" ]];then
+        arch="arm"
+    elif [[ $arch == "s390x" ]]; then
+        arch="s390x"
+    else
+        red "未知arch"
 !EOF!
-
 # 比特位
 lbit=$( getconf LONG_BIT )
 # virt
 virt=$( systemd-detect-virt )
-# release
-release=""
-if  [ -f /etc/os-release ]; then
-    release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
-elif [ -f /etc/redhat-release ]; then
-    release=$(awk '{print $1}' /etc/redhat-release)
-elif [ -f /etc/lsb-release ]; then
-    release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
-fi
-# command
+# 获取release(debian,ubuntu.centos....等)
+#第一种方法
 <<!EOF!
-if [[ $(command -v apt-get) || $(command -v yum) ]] && [[ $(command -v systemctl) ]]; then
-	if [[ $(command -v yum) ]]; then
-		cmd="yum"
-	fi
-else echo -e "不支持你的系统" && exit 1
-fi
+    Get_Release() {
+    if  [ -f /etc/os-release ]; then
+        release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
+    elif [ -f /etc/redhat-release ]; then
+        release=$(awk '{print $1}' /etc/redhat-release)
+    elif [ -f /etc/lsb-release ]; then
+        release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
+    fi
+    }
 !EOF!
-Cmd_Type=""
-if [[ $(command -v apt-get) ]]; then
-    Cmd_Type="debian"
-elif [[ $(command -v yum) ]]; then
-    Cmd_Type="centos"
-else red "只支持debian与centos"
-fi
+#第二种方法
+Get_Release() {
+    if [[ -f /etc/redhat-release ]]; then
+        release="centos"
+    elif cat /etc/issue | grep -Eqi "debian"; then
+        release="debian"
+    elif cat /etc/issue | grep -Eqi "ubuntu"; then
+        release="ubuntu"
+    elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
+        release="centos"
+    elif cat /proc/version | grep -Eqi "debian"; then
+        release="debian"
+    elif cat /proc/version | grep -Eqi "ubuntu"; then
+        release="ubuntu"
+    elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
+        release="centos"
+    else
+        red -e "未检测到系统版本，请联系脚本作者" && exit 1
+    fi
+    }
+#获取IP地址
+Get_Ip() {
+    ipv4_address=$(curl 4.ipw.cn 2>/dev/null)
+    ipv6_address=$(curl 6.ipw.cn 2>/dev/null)
+}
+# 获取command类型
+Get_Cmd_Type() {
+        if [[ $(command -v apt-get) ]]; then
+    Cmd_Type="apt"
+    elif [[ $(command -v yum) ]]; then
+        Cmd_Type="yum"
+    else red "只支持debian与centos"
+    fi
+    }
 
-# 检测是否运行
+
+# 检测是否运行， 返回0为运行
 check_status() {
     count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
-    #返回0为运行
     if [[ count -ne 0 ]]; then
         return 0
     else
         return 1
     fi
-}
+    }
 
-# 检测是否为服务
+# 检测是否为服务,返回0运行
 check_enabled() {
     temp=$(systemctl is-enabled $1)
     if [[ x"${temp}" == x"enabled" ]]; then
-        return 1
-    else
         return 0
+    else
+        return 1
     fi
-}
+    }
 
-# check root
+# 检查是否为root
 #[[ $EUID -ne 0 ]] && red "错误：必须使用root用户运行此脚本！\n" && exit 1
-# 下载脚本
-#Add_Shell() {
-#   wget -O /usr/bin/ponk -N --no-check-certificate https://raw.githubusercontent.com/ppoonk/all/master/ponk-tools.sh
-#   chmod +x /usr/bin/ponk
-#   }
 
 # 返回主菜单
 Return_Show_Menu() {
     yellow "按回车返回主菜单: " && read temp
     Show_Menu
-}
-# 显示info
+    }
+
+# 显示系统info
 Show_Information() {
+    clear
+    Get_Release
+    Get_Ip
     blue "—————————————————————————————————————————————"
    
-    echo -e "系统:$(blue "$release $lbit"位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt")"   
+    echo -e "系统:$(blue "$release $lbit"位)  Arch：$(blue "$arch")  虚拟化：$(blue "$virt")"
+    echo -e "IPV4:$(blue "$ipv4_address")"
+    echo -e "IPV6:$(blue "$ipv6_address")"
 
     blue "—————————————————————————————————————————————"
-}
+    }
 
 # 添加服务
 Add_Systemctl_Service() {
@@ -118,7 +140,7 @@ Add_Systemctl_Service() {
     yellow "$Name 服务状态如下："
     systemctl status $Name
 
-}
+    }
 
 # 安装宝塔
 Install_BT() {
@@ -140,11 +162,12 @@ Install_BT() {
     4) /etc/init.d/mw stop && rm -rf /www/server/mdserver-web ;;
     5) exit 0;;
     esac
-}
+    }
 # 卸载apache2
 uninstall_apache2() {
+    Get_Cmd_Type
     
-    if [[ $Cmd_Type == "debian" ]]; then
+    if [[ $Cmd_Type == "apt" ]]; then
         #temp=$(dpkg -l | grep apache2)
         #if [ -n temp ]; then
             systemctl stop httpd.service
@@ -153,7 +176,7 @@ uninstall_apache2() {
             yellow "卸载完成"
         #else yellow "无需卸载"
         #fi
-    elif [[ $Cmd_Type == "centos" ]]; then
+    elif [[ $Cmd_Type == "yum" ]]; then
        # temp=$(yum list | grep httpd)
        # if [ -n temp ]; then
             systemctl stop httpd.service
@@ -163,9 +186,10 @@ uninstall_apache2() {
     else red "请手动卸载apache"
        # fi
     fi
-}
-
+    }
+#x-ui国内镜像
 Install_xui_cn() {
+    Get_Cmd_Type
     local arch1=""
     if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
     arch1="amd64"
@@ -187,7 +211,7 @@ Install_xui_cn() {
 
 
     install_base() {
-    if [[ x"$Cmd_Type" == x"centos" ]]; then
+    if [[ x"$Cmd_Type" == x"yum" ]]; then
         yum install wget curl tar -y
     else
         apt install wget curl tar -y
@@ -256,8 +280,8 @@ Install_xui_cn() {
     yellow "开始安装"
     install_base
     install_x-ui
-}
-#安卓deploy安装x-ui
+    }
+#安装x-ui for deploy
 Deploy_x-ui() {
     Download_deploy_x-ui() {
 
@@ -317,8 +341,8 @@ Deploy_x-ui() {
         5) exit 0 ;;
     esac
 
-}
-
+    }
+#安装ddns-go for deploy
 Deploy_ddns_go() {
     Download_deploy_ddns_go() {
     local arch1=""
@@ -379,7 +403,7 @@ Deploy_ddns_go() {
         3) exit 0 ;;
     esac
 
-}
+    }
 
 # 安装v2raya
 V2raya() {
@@ -427,16 +451,16 @@ V2raya() {
     WorkingDirectory="/usr/local/v2raya"
     ExecStart="/usr/local/v2raya/v2raya"
     echo -e "[Unit]\nDescription=$name Service
-After=network.target
-Wants=network.target
+    After=network.target
+    Wants=network.target
 
-[Service]
-Type=simple
-WorkingDirectory=$WorkingDirectory
-ExecStart=$ExecStart
+    [Service]
+    Type=simple
+    WorkingDirectory=$WorkingDirectory
+    ExecStart=$ExecStart
 
-[Install]
-WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
+    [Install]
+    WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
     systemctl daemon-reload
     systemctl enable $Name
     systemctl start $Name
@@ -447,7 +471,7 @@ WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
             使用方法 systemctl [start|restart|stop|status] v2raya"
         else red "安装错误,重新运行脚本多尝试几次" && exit 1
     fi
-}
+    }
     Uninstall_V2raya() {
     yellow "开始卸载..."
     systemctl stop v2raya
@@ -458,7 +482,7 @@ WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
     systemctl daemon-reload
     yellow "v2raya卸载完成"
 
-}
+    }
     clear
     yellow "
         1.安装v2raya
@@ -470,8 +494,7 @@ WantedBy=multi-user.target" > /etc/systemd/system/$Name.service
         2) Uninstall_V2raya ;;
         3) exit 0 ;;
     esac
-}
-
+    }
 
 #安装DDNS-GO
 DDNS_go() {
@@ -549,21 +572,21 @@ DDNS_go() {
         4) exit 0 ;;
     esac
 
-}
+    }
 
 # 安装v2board面板
 Install_V2board() {
-    if [[ $Cmd_Type == "centos" ]]; then
+    Get_Cmd_Type
+    if [[ $Cmd_Type == "yum" ]]; then
         yum -y install git wget 
         git clone https://gitee.com/gz1903/v2board_install.git /usr/local/src/v2board_install 
-        cd /usr/local/src/v2board_install && chmod +x v2board_install.sh && ./v2board_install.sh
-        
+        cd /usr/local/src/v2board_install && chmod +x v2board_install.sh && ./v2board_install.sh  
     else 
         red "仅支持centos系统！！！"
     fi
-
     }
 
+#安卓termux安装linux
 Install_Termux_Linux() {
    
     apt install proot git python -y
@@ -574,27 +597,29 @@ Install_Termux_Linux() {
     如果安装的是ubuntu，使用  cd ~/Termux-Linux/Ubuntu && ./start-ubuntu.sh
     其他系统启动命令类似"
     #cd ~/Termux-Linux/Debian && ./start-debian.sh
-}
+    }
 
 
 # 钉钉内网穿透
 Ding_Tunnel() {
+    Get_Cmd_Type
 
     local type1=""
     if [[ $arch == "amd64" || $arch == "x64" || $arch == "x86_64" ]]; then
         type1="linux"
-    elif [[ $arch == "arm64" || $arch == "aarch64" || $arch == "arm" || $arch == "armv7" || $arch == "armv6" || $arch == "armv6" || $arch == "armv7l"
-]]; then
+    elif [[ $arch == "arm64" || $arch == "aarch64" || $arch == "arm" ]]; then
+        type1="linux_arm"
+    elif [[ $arch == "armv7" || $arch == "armv6" || $arch == "armv6" || $arch == "armv7l" ]]; then
         type1="linux_arm"
     elif [[ $arch == "x86" ]]; then
         type1="linux_386"
     else red "不支持您的版本，或者手动去github库下载---https://github.com/open-dingtalk/dingtalk-pierced-client" 
     fi
 
-    if [[ $Cmd_Type == "debian" ]]; then
+    if [[ $Cmd_Type == "apt" ]]; then
        # apt update 
         apt install git screen -y
-    elif [[ $Cmd_Type == "centos" ]]; then
+    elif [[ $Cmd_Type == "yum" ]]; then
        # yum update 
         yum install screen git -y
     else red "错误,本脚本仅适用于centos，ununtu和debian"
@@ -679,15 +704,15 @@ Ding_Tunnel() {
 		4) Uninstall_Ding_Tunnel ;;
 		*) exit 1 ;;
 	esac
-}
-Show_Ding_Menu
-}
+    }
+    Show_Ding_Menu
+    }
 
-
+#shc加密
 Install_shc() {
     local shc_status="未安装"
 
-Install_shc1() {
+    Install_shc1() {
     rm -f shc-3.8.9.tgz
     rm -rf /usr/local/man/man1
     rm -f /usr/local/bin/shc
@@ -699,40 +724,40 @@ Install_shc1() {
     make install
     yellow "安装完成"
     Show_shc_menu
-}
-Uninstall_shc1() {
+    }
+    Uninstall_shc1() {
     rm -f shc-3.8.9.tgz
     rm -rf /usr/local/man/man1
     rm -f /usr/local/bin/shc
     yellow "卸载完成"
-}
-Show_shc_menu() {
+    }
+    Show_shc_menu() {
 
-echo -e "
-常用参数：
--e  date （指定过期日期）
--m  message （指定过期提示的信息） 
--f  script_name（指定要编译的shell的路径及文件名）
--r  Relax security. （可以相同操作系统的不同系统中执行）
--v  Verbose compilation（编译的详细情况）
+    echo -e "
+    常用参数：
+    -e  date （指定过期日期）
+    -m  message （指定过期提示的信息） 
+    -f  script_name（指定要编译的shell的路径及文件名）
+    -r  Relax security. （可以相同操作系统的不同系统中执行）
+    -v  Verbose compilation（编译的详细情况）
 
-使用方法：
-# shc -v -f abc.sh
--f 后面跟需要加密的文件  ,运行后会生成两个文件: 
-abc.sh.x     为二进制文件，赋予执行权限后，可直接执行
-abc.sh.x.c   为c源文件。基本没用，可以删除
+    使用方法：
+    # shc -v -f abc.sh
+    -f 后面跟需要加密的文件  ,运行后会生成两个文件: 
+    abc.sh.x     为二进制文件，赋予执行权限后，可直接执行
+    abc.sh.x.c   为c源文件。基本没用，可以删除
 
-# 设定有效执行期限的方法，如：
-# shc -e 28/01/2012 -m "过期了" -f abc.sh
-选项“-e”指定过期时间，格式为“日/月/年”；选项“-m”指定过期后执行此shell程序的提示信息"
+    # 设定有效执行期限的方法，如：
+    # shc -e 28/01/2012 -m "过期了" -f abc.sh
+    选项“-e”指定过期时间，格式为“日/月/年”；选项“-m”指定过期后执行此shell程序的提示信息"
     
 
-}
-Check_shc_status() {
-    [[ -s /usr/local/bin/shc ]] && shc_status="已安装"
+    }
+    Check_shc_status() {
+        [[ -s /usr/local/bin/shc ]] && shc_status="已安装"
 
-}
-Check_shc_status
+    }
+    Check_shc_status
     echo ""
     echo ""
     yellow "加密工具shc：$shc_status"
@@ -744,11 +769,12 @@ Check_shc_status
     *)  ;;
     esac
 
-}
+    }
+#Unshc解密
 Unshc() {
     wget -c -N --no-check-certificate -O /root/UnSHc.sh https://raw.fastgit.org/ppoonk/all/master/UnSHc.sh && chmod +x UnSHc.sh && ./UnSHc.sh
 
-}
+    }
 
 BBR_series() {
     clear
@@ -765,7 +791,7 @@ BBR_series() {
     *) exit 0;;
     esac
 
-}
+    }
 XUI_series() {
     clear
     yellow "
@@ -780,19 +806,289 @@ XUI_series() {
     3) Deploy_x-ui ;;
     *) exit 0;;
     esac
+    }
+#更新sources源，Ubuntu、debian 
+Upgrade_Sources() {
+    Get_Release
+    Upgrade_Sources_debian() {
+        sources_bak_path=$(date +"%d-%m-%Y")
+        mv /etc/apt/sources.list /etc/apt/sources.list.${sources_bak_path}
+        yellow "
+        旧文件已备份为：/etc/apt/sources.list.${sources_bak_path}
+        正在更新源..."
+        echo -e "
+        deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free
+        # deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free
+        deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
+        # deb-src http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
+        # deb http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free
+        # deb-src http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free" > /etc/apt/sources.list
+
+        #更新，是索引生效
+        sudo apt-get update
+        yellow "已更新国内中科大USTC源"
+        }
+    Upgrade_Sources_ubuntu() {
+        sources_bak_path=$(date +"%d-%m-%Y")
+        mv /etc/apt/sources.list /etc/apt/sources.list.${sources_bak_path}
+        yellow "
+        旧文件已备份为：/etc/apt/sources.list.${sources_bak_path}
+        正在更新源..."
+        echo -e "
+        # 默认注释了源码仓库，如有需要可自行取消注释
+        deb https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse
+        # deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse
+        deb https://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+        # deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+        deb https://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+        # deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+        deb https://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+        # deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" > /etc/apt/sources.list
+        #更新，是索引生效
+        sudo apt-get update
+        yellow "已更新国内中科大USTC源"
+
+    }
+
+    case $release in
+    debian) upgrade_sources_type="debian" ;;
+    ubuntu) upgrade_sources_type="ubuntu" ;;
+    *) red "仅支持debian、ubuntu，其他系统请手动" && exit 1 ;;
+    esac
+    clear
+    echo -e "
+    您的系统为：$(blue "$upgrade_sources_type $lbit 位")
+    1.更新国内中科大USTC源
+    2.回车退出
+    "
+    read -p "是否更新？请输入序号：" upgrade_sources_input
+    case $upgrade_sources_input in
+    1) Upgrade_Sources_${upgrade_sources_type} ;;
+    *) exit 0 ;;
+    esac
+
+
+}
+# 升级kernel，debian、ubuntu
+Upgrade_Kernel() {
+    Get_Release
+    current_kernel=$(uname -r)
+    Upgrade_kernel_debian() {
+        Upgrade_kernel_debian
+        sudo apt-get update && sudo apt-get dist-upgrade -y
+        apt -t bullseye-backports install linux-image-amd64 -y
+        apt -t bullseye-backports install linux-headers-amd64 -y
+        #更新引导
+        update-grub
+        yellow "kernel更新完成，请重启服务器生效"
+
+    }
+    Upgrade_kernel_ubuntu() {
+        #查看当前系统内核
+        # dpkg --get-selections| grep linux1
+        #卸载多余内核
+        # sudo apt-get remove --purge linux-image-4.2.0-22-generic123
+        # sudo apt-get autoclean
+        # sudo apt-get autoremove12
+        yellow "正在下载..."
+        url_header="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19-rc7/amd64/linux-headers-5.19.0-051900rc7-generic_5.19.0-051900rc7.202207172131_amd64.deb"
+        url_herder_all="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19-rc7/amd64/linux-headers-5.19.0-051900rc7_5.19.0-051900rc7.202207172131_all.deb"
+        url_image="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19-rc7/amd64/linux-image-unsigned-5.19.0-051900rc7-generic_5.19.0-051900rc7.202207172131_amd64.deb"
+        url_modules="https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19-rc7/amd64/linux-modules-5.19.0-051900rc7-generic_5.19.0-051900rc7.202207172131_amd64.deb"
+        mkdir /root/temp_kernel
+        wget -N --no-check-certificate -O /root/temp_kernel/header.deb $url_header
+        wget -N --no-check-certificate -O /root/temp_kernel/herder_all.deb $url_herder_all
+        wget -N --no-check-certificate -O /root/temp_kernel/image.deb $url_header
+        wget -N --no-check-certificate -O /root/temp_kernel/modules.deb $url_header
+        cd /root/temp_kernel
+        yellow "正在安装..."
+        sudo dpkg -i header.deb
+        sudo dpkg -i herder_all.deb 
+        sudo dpkg -i image.deb
+        sudo dpkg -i modules.deb
+        #更新引导
+        yellow "正在更新引导..."
+        update-grub
+        yellow "kernel更新完成，请重启服务器生效"
+    }
+
+    case $release in
+    debian) upgrade_kernel_type="debian";;
+    ubuntu) upgrade_kernel_type="ubuntu" ;;
+
+    *) red "仅支持debian、ubuntu" && exit 1 ;;
+    esac
+    echo -e "
+    您的系统为：$(blue "$upgrade_kernel_type")
+    当前内核为：$(blue "$current_kernel")
+    1.三思之后确认升级内核kernel
+    2.回车退出
+    "
+    read -p "升级内核有未知风险，是否升级内核？请输入序号：" upgrade_kernel_input
+    case $upgrade_kernel_input in
+    1) Upgrade_kernel_${upgrade_kernel_type} ;;
+    2) exit 0 ;;
+    esac
 }
 
+#安装wireguard，手动配置
+Wireguard() {
+    # 在KVM的前提下，判断 Linux 版本是否小于 5.6，如是则安装 wireguard 内核模块，变量 WG=1。由于 linux 不能直接用小数作比较，所以用 （主版本号 * 100 + 次版本号 ）与 506 作比较
+    [[ $(($(uname -r | cut -d . -f1) * 100 +  $(uname -r | cut -d . -f2))) -lt 506 ]] && WG=1
+    Wireguard_debian(){
+            # 添加 backports 源,之后才能安装 wireguard-tools 
+            echo "deb http://deb.debian.org/debian/ unstable main" > /etc/apt/sources.list.d/unstable-wireguard.list
+            echo -e "Package: *\nPin: release a=unstable\nPin-Priority: 150\n" > /etc/apt/preferences.d/limit-unstable
+            # 更新源
+            #更新源并安装
+            apt-get update
+            apt-get install  wireguard-tools net-tools iproute2 openresolv dnsutils iptables
+            # 如 Linux 版本低于5.6并且是 kvm，则安装 wireguard 内核模块
+            [[ $WG = 1 ]] && apt install --no-install-recommends linux-headers-"$(uname -r)" && apt install --no-install-recommends wireguard-dkms
+            }
 
-# 菜单
+    Wireguard_ubuntu(){
+            # 更新源
+            apt update -y
+            # 安装一些必要的网络工具包和 wireguard-tools (Wire-Guard 配置工具：wg、wg-quick)
+            #报错修复
+            apt --fix-broken install -y
+            apt install -y --no-install-recommends net-tools iproute2 openresolv dnsutils iptables
+            apt install -y --no-install-recommends wireguard-tools
+
+            #Ubuntu添加库
+            #add-apt-repository ppa:wireguard/wireguard
+            #更新源并安装
+            #apt-get update
+            #apt-get install wireguard
+            }
+            
+    Wireguard_centOS(){
+            # 安装一些必要的网络工具包和wireguard-tools (Wire-Guard 配置工具：wg、wg-quick)
+            yum install -y epel-release elrepo-release yum-plugin-elrepo
+            yum install -y net-tools iptables
+            yum install -y wireguard-tools
+
+            # 如 Linux 版本低于5.6并且是 kvm，则安装 wireguard 内核模块
+            VERSION_ID="7"
+            [[ $WG = 1 ]] && curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-"$VERSION_ID"/jdoss-wireguard-epel-"$VERSION_ID".repo && yum install -y wireguard-dkms
+            # 升级所有包同时也升级软件和系统内核
+            yum update -y
+        }
+
+    WireGuard_Interface='wgcf'
+
+    #安装wg
+    Install_WireGuardTools() {
+        Get_Release
+        current_kernel=$(uname -r)
+        echo -e "
+        您的系统为：$(blue "$release")
+        当前内核为：$(blue "$current_kernel")
+        1.确认安装wireguard
+        2.回车退出
+        "
+        read -p "请输入序号：" install_wireguard_input
+        case $install_wireguard_input in
+        1) Wireguard_${release} ;;
+        2) exit 0 ;;
+        esac
+
+
+    }
+    Install_WireGuard() {
+        
+        Check_WireGuard
+        if [[ ${WireGuard_SelfStart} != enabled || ${WireGuard_Status} != active ]]; then
+            Install_WireGuardTools
+        else
+            yellow "WireGuard 正在运行"
+        fi
+    }
+    #检查wg
+    Check_WireGuard() {
+        WireGuard_Status=$(systemctl is-active wg-quick@wgcf)
+        WireGuard_SelfStart=$(systemctl is-enabled wg-quick@wgcf 2>/dev/null)
+    }
+    #启动wg
+    Start_WireGuard() {
+        yellow "正在启动wg..."
+        # 设置开机自启
+        systemctl enable wg-quick@wgcf --now
+        # 启用守护进程
+        systemctl start wg-quick@wgcf
+        Check_WireGuard
+        WireGuard_change_dns
+        if [[ ${WireGuard_Status} = active ]]; then
+            yellow "WireGuard已运行."
+        else
+            red "WireGuard 运行失败"
+
+            exit 1
+        fi
+    }
+    #停止wg
+    Stop_WireGuard() {
+
+            systemctl stop wg-quick@wgcf
+            Check_WireGuard
+            if [[ ${WireGuard_Status} != active ]]; then
+                yellow "WireGuard 已停止."
+            else
+                red "WireGuard 停止失败"
+            fi
+    }
+    #卸载wg
+    Uninstall_WireGuard() {
+        #wg-quick down wgcf
+        systemctl stop wg-quick@wgcf
+        #systemctl disable wg-quick@wgcf
+        systemctl disable --now wg-quick@wgcf
+
+    }
+    #修改dns
+    WireGuard_change_dns() {
+        
+        WireGuard_change_dns_path=$(date +"%M-%k-%d-%m-%Y")
+        mv /etc/resolv.conf /etc/resolv.conf.${WireGuard_change_dns_path}
+        yellow "原dns备份到：/etc/resolv.conf.${WireGuard_change_dns_path}"
+        echo -e "nameserver 2001:4860:4860::8844
+            nameserver 114.114.114.114
+            nameserver 8.8.8.8" > /etc/resolv.conf
+        yellow "dns修改完成"
+  
+    }
+    Wireguard_menu() {
+        echo -e "
+        配置文件路径：$(yellow "/etc/wireguard/wgcf.conf")
+        请手动修改配置文件！！！！！！！！！！！
+        1.安装wg
+        2.启动wg
+        3.停止wg
+        4.关闭wg
+        "
+        read -p "输入序号：" Input
+        case $Input in
+        1) Install_WireGuard ;;
+        2) Start_WireGuard ;;
+        3) Stop_WireGuard ;;
+        4) Uninstall_WireGuard;;
+        5) exit 0 ;;
+        esac
+    }
+    Wireguard_menu
+    }
+
+# 主菜单
 Show_Menu() {
     clear
     clear
-    Show_Information
+    #Show_Information
    
     echo -e ""
     yellow "1.国内机更换github hosts"
     yellow "2.bench.sh"          
-    yellow "3.三网测速 "           
+    yellow "3.三网测速"           
     yellow "4.路由回程测试"             
     yellow "5.warp"
     echo -e ""
@@ -820,6 +1116,9 @@ Show_Menu() {
 
     yellow "21.安装docker"
     yellow "22.安装v2board面板"
+    yellow "23.更新源"
+    yellow "24.更新内核kernel"
+    yellow "25.安装wireguard"
     echo -e ""
 
     yellow "0.回车或输入0退出"
@@ -858,12 +1157,14 @@ Show_Menu() {
         20) Add_Systemctl_Service ;;
 
         21) curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun ;;
-        22) Install_V2board ;
+        22) Install_V2board ;;
+        23) Upgrade_Sources ;;
+        24) Upgrade_Kernel ;;
+        25) Wireguard ;;
 
        
         
     esac
 
 }
-# Add_Shell
 Show_Menu
