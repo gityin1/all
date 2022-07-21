@@ -68,6 +68,20 @@ install_base() {
         apt install wget curl unzip tar cron socat -y
     fi
 }
+#默认链接
+url1="download.fastgit.org"
+url2="raw.fastgit.org"
+
+#判断国内国外vps
+v4=$(curl -s4m8 https://ip.gs -k)
+#v6=$(curl -s6m8 https://ip.gs -k)
+c4=$(curl -s4m8 https://ip.gs/country -k)
+#c6=$(curl -s6m8 https://ip.gs/country -k)
+if [[ $c4 != "China" ]]; then
+    url1="github.com"
+    url2="raw.githubusercontent.com"
+fi
+
 
 status1="未安装"
 status2="未运行"
@@ -85,10 +99,6 @@ install_acme() {
     curl https://get.acme.sh | sh
 }
 
-#安装完成显示的信息
-After_install_menu() {
-    echo
-}
 
 Panel_setting() {
     #设定前端地址
@@ -250,15 +260,18 @@ Download_XrayR() {
             echo -e "${red}检测 XrayR 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 XrayR 版本安装${plain}"
             exit 1
         fi
-        echo -e "${green}检测到 XrayR 最新版本：${last_version}，开始安装${plain}"
-        wget -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux-64.zip https://download.fastgit.org/missuo/XrayR/releases/download/${last_version}/XrayR-linux-64.zip
+        echo -e "${green}
+        检测到 XrayR 最新版本：${last_version}，开始安装
+        如果下载很慢，请 ctrl+c 取消脚本，重新运行${plain}"
+
+        wget -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux-64.zip https://${url1}/missuo/XrayR/releases/download/${last_version}/XrayR-linux-64.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 XrayR 失败，请确保你的服务器能够下载 Github 的文件${plain}"
             exit 1
         fi
     else
         last_version=$1
-        url="https://download.fastgit.org/missuo/XrayR/releases/download/${last_version}/XrayR-linux-64.zip"
+        url="https://${url1}/missuo/XrayR/releases/download/${last_version}/XrayR-linux-64.zip"
         echo -e "开始安装 XrayR v$1"
         wget -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux-64.zip ${url}
         if [[ $? -ne 0 ]]; then
@@ -298,11 +311,12 @@ WantedBy=multi-user.target" > /etc/systemd/system/XrayR.service
 }
 Install_xrayr() {
     #下载XrayR管理脚本
-    curl -o /usr/bin/XrayR -Ls https://raw.fastgit.org/missuo/XrayR-V2Board/master/XrayR.sh
+    curl -o /usr/bin/XrayR -Ls https://${url2}/missuo/XrayR-V2Board/master/XrayR.sh
     chmod +x /usr/bin/XrayR
 
     Download_XrayR
     Panel_setting
+    #显示菜单
     echo -e "
     ${yellow}您的前端面板类型：${plain}
     1、V2Board
@@ -314,6 +328,7 @@ Install_xrayr() {
     3) echo -e "${red}输入错误${plain}" && exit 1 ;;
     esac
     echo -e "${green}配置文件写入成功${plain}"
+    #关闭防火墙
     echo -e "正在关闭防火墙！"
     echo
     systemctl disable firewalld
@@ -330,6 +345,8 @@ Main_menu() {
     clear
     check_status
     echo -e "
+    vps IPv4：${green}$v4${plain}
+    vps所在地：${green}$c4${plain}
     xrayr状态：${green}$status1  $status2${plain}
     1.安装xrayr
     2.启动xrayr
