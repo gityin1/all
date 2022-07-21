@@ -339,8 +339,8 @@ Main_menu() {
     read -p "输入您的序号：" Main_menu_input
     case $Main_menu_input in
     1) Install_xrayr ;;
-    2) systemctl start XrayR && check_status && echo -e "当前v2board $status2";;
-    3) systemctl stop XrayR && check_status && echo -e "当前v2board $status2";;
+    2) systemctl start XrayR && check_status && echo -e "当前xrayr $status2";;
+    3) systemctl stop XrayR && check_status && echo -e "当前xrayr $status2";;
     4) systemctl stop XrayR && systemctl disable XrayR && rm -rf /etc/systemd/system/XrayR.service && systemctl daemon-reload && rm -rf /usr/local/XrayR && echo -e "卸载完成" ;;
     *) exit 0 ;;
     esac
