@@ -330,11 +330,11 @@ Main_menu() {
     clear
     check_status
     echo -e "
-    v2board状态：${green}$status1  $status2${plain}
-    1.安装v2board
-    2.启动v2board
-    3.停止v2board
-    4.卸载v2board
+    xrayr状态：${green}$status1  $status2${plain}
+    1.安装xrayr
+    2.启动xrayr
+    3.停止xrayr
+    4.卸载xrayr
     5.回车退出"
     read -p "输入您的序号：" Main_menu_input
     case $Main_menu_input in
