@@ -83,7 +83,12 @@ Get_Cmd_Type() {
     }
 
 
-# 检测是否运行， 返回0为运行
+# 检测systemctl 程序后台运行
+Check_WireGuard() {
+    ${1}_Status=$(systemctl is-active $1)
+    ${1}_SelfStart=$(systemctl is-enabled $1 2>/dev/null)
+    }
+# 检测是否后台运行， 返回0为运行
 check_status() {
     count=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
     if [[ count -ne 0 ]]; then
@@ -302,6 +307,7 @@ Deploy_x-ui() {
 
     }
     Start_deploy_x-ui() {
+        apt update -y
         apt install screen -y
         cd /usr/local/x-ui
         /usr/local/x-ui/x-ui setting -username admin -password admin
@@ -585,6 +591,17 @@ Install_V2board() {
         red "仅支持centos系统！！！"
     fi
     }
+
+#安装Xrayr机场后端
+Install_XrayR() {
+    #下载
+    XrayR_download() {
+    XrayR_download_url="https://github.com/missuo/XrayR/releases/download/v0.8.0/XrayR-linux-64.zip"
+    wget -O xrayr.zip $XrayR_download_url
+    unzip -d ./xrayr xrayr.zip
+
+    }
+}
 
 #安卓termux安装linux
 Install_Termux_Linux() {
@@ -1049,7 +1066,7 @@ Wireguard() {
     #修改dns
     WireGuard_change_dns() {
         
-        WireGuard_change_dns_path=$(date +"%M-%k-%d-%m-%Y")
+        WireGuard_change_dns_path=$(date +"%M-%k-%m-%Y")
         mv /etc/resolv.conf /etc/resolv.conf.${WireGuard_change_dns_path}
         yellow "原dns备份到：/etc/resolv.conf.${WireGuard_change_dns_path}"
         echo -e "nameserver 2001:4860:4860::8844
@@ -1136,7 +1153,7 @@ Show_Menu() {
         6) XUI_series ;;
         7) wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh ;;
         8) BBR_series;;
-        9) wget -O xrayr.zip https://github.com/Misaka-blog/XrayR/releases/latest/download/XrayR-linux-64.zip && unzip -d ./xrayr xrayr.zip ;;
+        9) Install_XrayR ;;
         10) V2raya ;;
 
         11) DDNS_go ;;
