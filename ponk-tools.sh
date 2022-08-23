@@ -41,8 +41,7 @@ lbit=$( getconf LONG_BIT )
 # virt
 virt=$( systemd-detect-virt )
 #获取release第一种方法
-<<!EOF!
-    Get_Release() {
+Get_Release() {
     if  [ -f /etc/os-release ]; then
         release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
     elif [ -f /etc/redhat-release ]; then
@@ -50,9 +49,10 @@ virt=$( systemd-detect-virt )
     elif [ -f /etc/lsb-release ]; then
         release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
     fi
-    }
-!EOF!
+}
+
 #获取release第二种方法
+<<!EOF!
 Get_Release() {
     if [[ -f /etc/redhat-release ]]; then
         release="centos"
@@ -72,6 +72,7 @@ Get_Release() {
         red -e "未检测到系统版本，请联系脚本作者" && exit 1
     fi
 }
+!EOF!
 
 #开放所有端口
 Open_ports() {
@@ -195,7 +196,18 @@ Uninstall_apache2() {
        # fi
     fi
 }
- 
+
+# 安装v2board面板
+Install_V2board() {
+    Get_Cmd_Type
+    if [[ $Cmd_Type == "yum" ]]; then
+        yum -y install git wget 
+        git clone https://gitee.com/gz1903/v2board_install.git /usr/local/src/v2board_install 
+        cd /usr/local/src/v2board_install && chmod +x v2board_install.sh && ./v2board_install.sh  
+    else 
+        red "仅支持centos系统！！！"
+    fi
+}
 # vps常用脚本2级菜单
 VPS_common_script() {
     clear
@@ -256,11 +268,34 @@ Linux_commands() {
         6) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/shc-unshc.sh) ;;
     esac
 }
+# 机场2级菜单
+Airport_menu() {
+    clear
+    echo -e "${yellow}机场相关脚本${plain}"
+    echo -e ""
+    echo -e "${yellow}1${plain}.v2board一键搭建（仅支持centos）"
+    echo -e "${yellow}2${plain}.XrayR一键对接（前端创建好节点id，再执行此脚本"
+    echo -e "${yellow}3${plain}.mack-a八合一脚本"
+    echo -e "${yellow}4${plain}."
+    echo -e ""
+    echo -e "${yellow}0${plain}.返回主菜单"
+    echo -e "${yellow}*${plain}.回车取消"
+    echo -e ""
+    read -p "请输入脚本序号:" Airport_menu_Input
+    
+    case "$Airport_menu_Input" in
+        
+        0) Main_Menu ;;
+        1) Install_V2board ;;
+        2) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/xrayr/XrayR-new.sh) ;;
+        3) bash <(curl -Ls https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh) ;;
+    esac
+}
 
 # 面板2级菜单
-Panel() {
+Panel_menu() {
     clear
-    echo -e "${yellow}面板${plain}"
+    echo -e "${yellow}面板相关脚本${plain}"
     echo -e ""
     echo -e "${yellow}1${plain}.宝塔面板 & mdserver-web面板"
     echo -e "${yellow}2${plain}.ddns-go面板"
@@ -301,8 +336,8 @@ Main_Menu() {
     echo -e ""
     echo -e "${yellow}4${plain}.vps常用脚本（bbr、warp、docker、路由测试、内网穿透等）"
     echo -e "${yellow}5${plain}.linux一些命令"
-    echo -e "${yellow}5${plain}.机场（v2board、XrayR、mack-a八合一等）"
-    echo -e "${yellow}6${plain}.面板（ddns面板、v2raya面板、探针、宝塔等）"
+    echo -e "${yellow}6${plain}.机场（v2board、XrayR、mack-a八合一等）"
+    echo -e "${yellow}7${plain}.面板（ddns面板、v2raya面板、探针、宝塔等）"
     echo -e ""
     echo -e "${yellow}*${plain}.回车取消"
     echo -e ""
@@ -315,7 +350,8 @@ Main_Menu() {
         3) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/x-ui-series.sh) ;;
         4) VPS_common_script ;;
         5) Linux_commands ;;
-        6) Panel ;;
+        6) Airport_menu ;;
+        7) Panel_menu ;;
     esac
 
 }
