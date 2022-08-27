@@ -326,7 +326,7 @@ Panel_menu() {
 # 主菜单
 Main_Menu() {
     clear
-    Show_Information
+    #Show_Information
         #    echo -e "${yellow}10${plain}."
         #    echo -e ""
 
