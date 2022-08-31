@@ -1,5 +1,21 @@
 #!/bin/bash
 
+green() {
+	echo -e "\033[32m\033[01m$1\033[0m"
+    }
+
+red() {
+	echo -e "\033[31m\033[01m$1\033[0m"
+    }
+
+yellow() {
+	echo -e "\033[33m\033[01m$1\033[0m"
+    }
+
+blue() {
+    echo -e "\033[36m\033[01m$1\033[0m"
+}
+
 red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[0;33m'
@@ -232,8 +248,8 @@ Deploy_x-ui() {
 Xui_series_menu() {
     clear
     echo -e "
-    vps IPv4：${green}$v4${plain}
-    vps所在地：${green}$c4${plain}
+    #vps IPv4：${green}$v4${plain}
+    #vps所在地：${green}$c4${plain}
     x-ui状态：${green}$status1  $status2${plain}
 
     1.Linux安装xui
