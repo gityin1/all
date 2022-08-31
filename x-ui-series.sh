@@ -61,10 +61,12 @@ Get_Release() {
     }
 
 #判断国内国外vps
-v4=$(curl -s4m8 https://ip.gs -k)
-#v6=$(curl -s6m8 https://ip.gs -k)
-c4=$(curl -s4m8 https://ip.gs/country -k)
-#c6=$(curl -s6m8 https://ip.gs/country -k)
+Get_region() {
+    v4=$(curl -s4m8 https://ip.gs -k)
+    #v6=$(curl -s6m8 https://ip.gs -k)
+    c4=$(curl -s4m8 https://ip.gs/country -k)
+    #c6=$(curl -s6m8 https://ip.gs/country -k)
+}
 
 #默认下载链接为国内加速
 url1="download.fastgit.org"
@@ -247,9 +249,10 @@ Deploy_x-ui() {
 
 Xui_series_menu() {
     clear
+    Get_region
     echo -e "
-    #vps IPv4：${green}$v4${plain}
-    #vps所在地：${green}$c4${plain}
+    vps IPv4：${green}$v4${plain}
+    vps所在地：${green}$c4${plain}
     x-ui状态：${green}$status1  $status2${plain}
 
     1.Linux安装xui
