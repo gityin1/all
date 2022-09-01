@@ -100,6 +100,15 @@ Get_Ip() {
     ipv4_address=$(curl 4.ipw.cn 2>/dev/null)
     ipv6_address=$(curl 6.ipw.cn 2>/dev/null)
 }
+#获取ip地区，判断国内国外vps
+Get_region() {
+    v4=$(curl -s4m8 https://ip.gs -k)
+    #v6=$(curl -s6m8 https://ip.gs -k)
+    c4=$(curl -s4m8 https://ip.gs/country -k)
+    #c6=$(curl -s6m8 https://ip.gs/country -k)
+}
+
+
 # 获取command类型
 Get_Cmd_Type() {
         if [[ $(command -v apt-get) ]]; then
@@ -244,13 +253,15 @@ VPS_common_script() {
 Linux_commands() {
     clear
     echo -e "${yellow}linux一些命令${plain}"
-    cho -e ""
+    echo -e ""
     echo -e "${yellow}1${plain}.国内机更换github hosts"
     echo -e "${yellow}2${plain}.卸载apache2"
     echo -e "${yellow}3${plain}.写入systemctl服务"
     echo -e "${yellow}4${plain}.更新源"
     echo -e "${yellow}5${plain}.更新内核kernel"
     echo -e "${yellow}6${plain}.shc & unshc"
+    
+
     echo -e ""
     echo -e "${yellow}0${plain}.返回主菜单"
     echo -e "${yellow}*${plain}.回车取消"
@@ -326,7 +337,7 @@ Panel_menu() {
 # 主菜单
 Main_Menu() {
     clear
-    #Show_Information
+    Show_Information
         #    echo -e "${yellow}10${plain}."
         #    echo -e ""
 
