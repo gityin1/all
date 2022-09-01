@@ -1,7 +1,27 @@
 #!/bin/bash
+green() {
+	echo -e "\033[32m\033[01m$1\033[0m"
+    }
 
+red() {
+	echo -e "\033[31m\033[01m$1\033[0m"
+    }
+
+yellow() {
+	echo -e "\033[33m\033[01m$1\033[0m"
+    }
+
+blue() {
+    echo -e "\033[36m\033[01m$1\033[0m"
+}
+
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+blue='\033[0;36m'
+plain='\033[0m'
 #安装wireguard，手动配置
-Wireguard() {
+
     # 在KVM的前提下，判断 Linux 版本是否小于 5.6，如是则安装 wireguard 内核模块，变量 WG=1。由于 linux 不能直接用小数作比较，所以用 （主版本号 * 100 + 次版本号 ）与 506 作比较
     [[ $(($(uname -r | cut -d . -f1) * 100 +  $(uname -r | cut -d . -f2))) -lt 506 ]] && WG=1
     Wireguard_debian(){
@@ -146,4 +166,4 @@ Wireguard() {
         esac
     }
     Wireguard_menu
-    }
+    
