@@ -276,7 +276,7 @@ Linux_commands() {
         4) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/upgrade_sources.sh) ;;
         5) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/upgrade_kernel.sh) ;;
         6) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/shc-unshc.sh) ;;
-        6) Open_ports ;;
+        7) Open_ports ;;
     esac
 }
 # 机场2级菜单
