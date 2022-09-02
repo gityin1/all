@@ -260,8 +260,7 @@ Linux_commands() {
     echo -e "${yellow}4${plain}.更新源"
     echo -e "${yellow}5${plain}.更新内核kernel"
     echo -e "${yellow}6${plain}.shc & unshc"
-    
-
+    echo -e "${yellow}7${plain}.linux开放所有端口"
     echo -e ""
     echo -e "${yellow}0${plain}.返回主菜单"
     echo -e "${yellow}*${plain}.回车取消"
@@ -277,6 +276,7 @@ Linux_commands() {
         4) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/upgrade_sources.sh) ;;
         5) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/upgrade_kernel.sh) ;;
         6) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/shc-unshc.sh) ;;
+        6) Open_ports ;;
     esac
 }
 # 机场2级菜单
