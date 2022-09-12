@@ -221,7 +221,7 @@ Install_V2board() {
 VPS_common_script() {
     clear
     echo -e "${yellow}vps常用脚本${plain}"
-    cho -e ""
+    echo -e ""
     echo -e "${yellow}1${plain}.warp"
     echo -e "${yellow}2${plain}.bbr"
     echo -e "${yellow}3${plain}.docker"
