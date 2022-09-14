@@ -356,9 +356,10 @@ Main_Menu() {
     
     case "$Input" in
         
-        1) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/bench.sh) ;;
+        #1) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/bench.sh) ;;
+	1) bash <(curl -Ls https://raw.fastgit.org/ppoonk/all/master/bench.sh) ;;
         2) bash <(curl -Lso- https://git.io/Jlkmw) ;;
-        3) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/x-ui-series.sh) ;;
+        3) bash <(curl -Ls https://raw.fastgit.org/ppoonk/all/master/x-ui-series.sh) ;;
         4) VPS_common_script ;;
         5) Linux_commands ;;
         6) Airport_menu ;;
