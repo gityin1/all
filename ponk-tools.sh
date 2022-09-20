@@ -97,15 +97,19 @@ Open_ports() {
 
 #获取IP地址
 Get_Ip() {
-    ipv4_address=$(curl 4.ipw.cn 2>/dev/null)
-    ipv6_address=$(curl 6.ipw.cn 2>/dev/null)
+    #ipv4_address=$(curl 4.ipw.cn 2>/dev/null)
+    #ipv6_address=$(curl 6.ipw.cn 2>/dev/null)
+    ipv4_address=$(curl -s4m8 https://ip.gs -k)
+    ipv6_address=$(curl -s6m8 https://ip.gs -k)
+    
 }
 #获取ip地区，判断国内国外vps
 Get_region() {
-    v4=$(curl -s4m8 https://ip.gs -k)
+
     #v6=$(curl -s6m8 https://ip.gs -k)
-    c4=$(curl -s4m8 https://ip.gs/country -k)
     #c6=$(curl -s6m8 https://ip.gs/country -k)
+    v4=$(curl -s4m8 https://ip.gs -k)
+    c4=$(curl -s4m8 https://ip.gs/country -k)
 }
 
 
