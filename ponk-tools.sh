@@ -270,9 +270,7 @@ Linux_commands() {
     echo -e "${yellow}*${plain}.回车取消"
     echo -e ""
     read -p "请输入脚本序号:" Linux_commands_Input
-    
     case "$Linux_commands_Input" in
-        
         0) Main_Menu ;;
         1) sed -i "/# GitHub520 Host Start/Q" /etc/hosts && curl https://raw.hellogithub.com/hosts >> /etc/hosts ;;
         2) Uninstall_apache2 ;;
