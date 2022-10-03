@@ -76,8 +76,10 @@ Get_Release() {
     }
 
     case $release in
-    debian || Debian) upgrade_kernel_type="debian";;
+    debian) upgrade_kernel_type="debian" ;;
+    Debian) upgrade_kernel_type="debian" ;;
     ubuntu) upgrade_kernel_type="ubuntu" ;;
+    Ubuntu) upgrade_kernel_type="ubuntu" ;;
 
     *) red "仅支持debian、ubuntu" && exit 1 ;;
     esac
