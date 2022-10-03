@@ -22,7 +22,16 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-
+#获取release第一种方法
+Get_Release() {
+    if  [ -f /etc/os-release ]; then
+        release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
+    elif [ -f /etc/redhat-release ]; then
+        release=$(awk '{print $1}' /etc/redhat-release)
+    elif [ -f /etc/lsb-release ]; then
+        release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
+    fi
+}
 # 升级kernel，debian、ubuntu
 
     Get_Release
