@@ -284,12 +284,12 @@ Linux_commands() {
 # 机场2级菜单
 Airport_menu() {
     clear
-    echo -e "${yellow}机场相关脚本${plain}"
+    echo -e "${yellow}机场-代理相关脚本${plain}"
     echo -e ""
     echo -e "${yellow}1${plain}.v2board一键搭建（仅支持centos）"
     echo -e "${yellow}2${plain}.XrayR一键对接（前端创建好节点id，再执行此脚本）"
     echo -e "${yellow}3${plain}.mack-a八合一脚本"
-    echo -e "${yellow}4${plain}.暂无"
+    echo -e "${yellow}4${plain}.安装tg代理mtproxy"
     echo -e ""
     echo -e "${yellow}0${plain}.返回主菜单"
     echo -e "${yellow}*${plain}.回车取消"
@@ -302,6 +302,7 @@ Airport_menu() {
         1) Install_V2board ;;
         2) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/xrayr/XrayR-new.sh) ;;
         3) bash <(curl -Ls https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh) ;;
+        4) bash <(curl -Ls https://raw.githubusercontent.com/ppoonk/all/master/mtproxy-missuo.sh) ;;
     esac
 }
 
@@ -349,7 +350,7 @@ Main_Menu() {
     echo -e ""
     echo -e "${yellow}4${plain}.vps常用脚本（bbr、warp、docker、路由测试、内网穿透等）"
     echo -e "${yellow}5${plain}.linux一些命令"
-    echo -e "${yellow}6${plain}.机场（v2board、XrayR、mack-a八合一等）"
+    echo -e "${yellow}6${plain}.机场-代理（v2board、XrayR、mack-a八合一、tg代理等）"
     echo -e "${yellow}7${plain}.面板（ddns面板、v2raya面板、探针、宝塔等）"
     echo -e ""
     echo -e "${yellow}*${plain}.回车取消"
