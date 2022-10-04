@@ -20,6 +20,17 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 blue='\033[0;36m'
 plain='\033[0m'
+
+#获取release第一种方法
+Get_Release() {
+    if  [ -f /etc/os-release ]; then
+        release=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
+    elif [ -f /etc/redhat-release ]; then
+        release=$(awk '{print $1}' /etc/redhat-release)
+    elif [ -f /etc/lsb-release ]; then
+        release=$(awk -F'[="]+' '/DESCRIPTION/{print $2}' /etc/lsb-release)
+    fi
+}
 #安装wireguard，手动配置
 
     # 在KVM的前提下，判断 Linux 版本是否小于 5.6，如是则安装 wireguard 内核模块，变量 WG=1。由于 linux 不能直接用小数作比较，所以用 （主版本号 * 100 + 次版本号 ）与 506 作比较
