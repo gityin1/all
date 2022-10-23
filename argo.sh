@@ -30,43 +30,6 @@ cpuArch=$(uname -m)
 # 判断是否为root用户
 [[ $EUID -ne 0 ]] && yellow "请在root用户下运行脚本" && exit 1
 
-# 检测系统，本部分代码感谢fscarmen的指导
-CMD=("$(grep -i pretty_name /etc/os-release 2>/dev/null | cut -d \" -f2)" "$(hostnamectl 2>/dev/null | grep -i system | cut -d : -f2)" "$(lsb_release -sd 2>/dev/null)" "$(grep -i description /etc/lsb-release 2>/dev/null | cut -d \" -f2)" "$(grep . /etc/redhat-release 2>/dev/null)" "$(grep . /etc/issue 2>/dev/null | cut -d \\ -f1 | sed '/^[ ]*$/d')")
-
-for i in "${CMD[@]}"; do
-	SYS="$i" && [[ -n $SYS ]] && break
-done
-
-for ((int = 0; int < ${#REGEX[@]}; int++)); do
-	[[ $(echo "$SYS" | tr '[:upper:]' '[:lower:]') =~ ${REGEX[int]} ]] && SYSTEM="${RELEASE[int]}" && [[ -n $SYSTEM ]] && break
-done
-
-[[ -z $SYSTEM ]] && red "不支持VPS的当前系统，请使用主流的操作系统" && exit 1
-[[ -z $(type -P curl) ]] && ${PACKAGE_UPDATE[int} && ${PACKAGE_INSTALL[int]} curl
-
-## 统计脚本运行次数
-<<!EOF!
-COUNT=$(curl -sm8 "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fgh%2FMisaka-blog%2Fargo-tunnel-script%40master%2Fargo.sh&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false" 2>&1) &&
-TODAY=$(expr "$COUNT" : '.*\s\([0-9]\{1,\}\)\s/.*')
-TOTAL=$(expr "$COUNT" : '.*/\s\([0-9]\{1,\}\)\s.*')
-!EOF!
-
-checkCentOS8() {
-	if [[ -n $(cat /etc/os-release | grep "CentOS Linux 8") ]]; then
-		yellow "检测到当前VPS系统为CentOS 8，是否升级为CentOS Stream 8以确保软件包正常安装？"
-		read -p "请输入选项 [y/n]：" comfirmCentOSStream
-		if [[ $comfirmCentOSStream == "y" ]]; then
-			yellow "正在为你升级到CentOS Stream 8，大概需要10-30分钟的时间"
-			sleep 1
-			sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
-			yum clean all && yum makecache
-			dnf swap centos-linux-repos centos-stream-repos distro-sync -y
-		else
-			red "已取消升级过程，脚本即将退出！"
-			exit 1
-		fi
-	fi
-}
 
 archAffix() {
 	case "$cpuArch" in
@@ -204,13 +167,6 @@ argoCert() {
 menu() {
 	checkStatus
 	clear
-	echo "#############################################################"
-	echo -e "#           ${RED}CloudFlare Argo Tunnel 一键配置脚本${PLAIN}             #"
-	echo -e "# ${GREEN}作者${PLAIN}: Misaka No                                           #"
-	echo -e "# ${GREEN}网址${PLAIN}: https://owo.misaka.rest                             #"
-	echo -e "# ${GREEN}论坛${PLAIN}: https://vpsgo.co                                    #"
-	echo -e "# ${GREEN}TG群${PLAIN}: https://t.me/misakanetcn                            #"
-	echo "#############################################################"
 	echo ""
 	echo -e " ${GREEN}1.${PLAIN} 安装 CloudFlare Argo Tunnel"
 	echo -e " ${GREEN}2.${PLAIN} 登录 CloudFlare Argo Tunnel"
@@ -226,8 +182,7 @@ menu() {
 	echo -e " ${GREEN}9.${PLAIN} 提取 Argo Tunnel 证书"
 	echo -e " ${GREEN}0.${PLAIN} 退出脚本"
 	echo ""
-	echo -e "CloudFlared 客户端状态：$cloudflaredStatus   账户登录状态：$loginStatus"
-	#echo -e "今日运行次数：$TODAY   总共运行次数：$TOTAL"
+	echo -e "CloudFlared 客户端状态：${YELLOW}$cloudflaredStatus${PLAIN}   账户登录状态：${YELLOW}$loginStatus${PLAIN}"
 	echo ""
 	read -rp "请输入选项 [0-9]: " menuChoice
 	case $menuChoice in
@@ -245,5 +200,5 @@ menu() {
 }
 
 archAffix
-checkCentOS8
+
 menu
