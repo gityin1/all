@@ -167,8 +167,8 @@ restart() {
 }
 
 menu() {
-	echo "原作者: CuteBi "
 	clear
+	echo "原作者: CuteBi "
 	echo "-------------------"
 	status
 	echo "-------------------"
