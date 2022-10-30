@@ -167,6 +167,11 @@ restart() {
 }
 
 menu() {
+	echo "原作者: CuteBi "
+	clear
+	echo "-------------------"
+	status
+	echo "-------------------"
     echo "
     1、安装并启动cns
     2、重启
