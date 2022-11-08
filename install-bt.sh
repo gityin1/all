@@ -14,7 +14,7 @@ Install_BT() {
     mv /www/server/panel/data/bind.pl bind.pl1
     bt ;;
     2) /etc/init.d/bt stop && chkconfig --del bt && rm -f /etc/init.d/bt && rm -rf /www/server/panel ;;
-    3) curl -fsSL  https://gitee.com/midoks/mdserver-web/raw/master/scripts/install_cn.sh | bash ;;
+    3) curl -fsSL https://cdn.jsdelivr.net/gh/midoks/mdserver-web@latest/scripts/install.sh | bash
     4) /etc/init.d/mw stop && rm -rf /www/server/mdserver-web ;;
     5) exit 0;;
     esac
