@@ -1,6 +1,6 @@
 #!/bin/bash
 Install_BT() {
-    yellow "
+    echo -e "
     1.安装宝塔770
     2.卸载宝塔
     3.安装mdserver-web
