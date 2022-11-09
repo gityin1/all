@@ -191,12 +191,12 @@ Deploy_x-ui() {
     # arm32位和arm64位下载地址
     [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
     [[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
-    if [[ -s /usr/local/x-ui.tar.gz ]]; then
-        yellow "x-ui已下载"
-    else
+     rm -rf /usr/local/x-ui.tar.gz
+     rm -rf /usr/local/x-ui
+    
         yellow "正在从github下载，请耐心等待······"
         wget -N --no-check-certificate -O /usr/local/x-ui.tar.gz ${url}
-    fi
+    
     yellow "下载完成，正在解压"
     cd /usr/local/
     tar zxvf x-ui.tar.gz
