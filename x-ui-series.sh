@@ -190,7 +190,10 @@ Deploy_x-ui() {
 
     # arm32位和arm64位下载地址
     [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
-    [[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    #[[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    [[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    
+
      rm -rf /usr/local/x-ui.tar.gz
      rm -rf /usr/local/x-ui
     
