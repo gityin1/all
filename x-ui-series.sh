@@ -69,8 +69,8 @@ Get_region() {
 }
 
 #默认下载链接为国内加速
-url1="download.fastgit.org"
-url2="raw.fastgit.org"
+url1="github.com"
+url2="raw.githubusercontent.com"
 install_type="cn"
 if [[ $c4 != "China" ]]; then
     url1="github.com"
@@ -189,7 +189,8 @@ Deploy_x-ui() {
     Download_deploy_x-ui() {
 
     # arm32位和arm64位下载地址
-    [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    #[[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    [[ $lbit == 32 ]] && url="https://github.com/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
     #[[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
     [[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
     
@@ -204,19 +205,27 @@ Deploy_x-ui() {
     cd /usr/local/
     tar zxvf x-ui.tar.gz
     cd x-ui 
-    chmod +x x-ui bin/*
+    chmod +x x-ui bin/* 
+    /usr/local/x-ui/x-ui setting -username admin -password admin
+  
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/ppoonk/all/master/x-ui-series.sh
+    chmod +x /usr/bin/x-ui
+    yellow "所有文件下载完成，默认端口：54321，默认用户名admin，默认密码：admin"
+    yellow "请及时修改用户名和密码"
+
 
     }
     Start_deploy_x-ui() {
         apt update -y
         apt install screen -y
         cd /usr/local/x-ui
-        /usr/local/x-ui/x-ui setting -username admin -password admin
+       # /usr/local/x-ui/x-ui setting -username admin -password admin
         screen -USdm x-ui ./x-ui
         #wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/vaxilu/x-ui/main/x-ui.sh
         #chmod +x /usr/bin/x-ui
-        yellow "使用默认参数"
-        yellow "x-ui已启动，访问IP:54321即可管理xui面板"
+       
+        yellow "x-ui已启动，访问IP:端口  即可管理xui面板"
+        yellow "命令行输入 x-ui 回车，可进行重启，卸载，启动等操作"
     }
     Stop_deploy_x-ui() {
         screen -S x-ui -X quit
