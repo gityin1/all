@@ -187,6 +187,8 @@ Install_xui_ponk() {
 Deploy_x-ui() {
     Get_bit
     Download_deploy_x-ui() {
+        apt update -y
+        apt install screen -y
 
     # arm32位和arm64位下载地址
     #[[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
@@ -216,8 +218,7 @@ Deploy_x-ui() {
 
     }
     Start_deploy_x-ui() {
-        apt update -y
-        apt install screen -y
+
         cd /usr/local/x-ui
        # /usr/local/x-ui/x-ui setting -username admin -password admin
         screen -USdm x-ui ./x-ui
@@ -225,7 +226,6 @@ Deploy_x-ui() {
         #chmod +x /usr/bin/x-ui
        
         yellow "x-ui已启动，访问IP:端口  即可管理xui面板"
-	yellow "默认端口：54321，默认用户名admin，默认密码：admin，请及时修改密码和端口"
         yellow "命令行输入 x-ui 回车，可进行重启，卸载，启动等操作"
     }
     Stop_deploy_x-ui() {
@@ -258,7 +258,7 @@ Deploy_x-ui() {
         5) exit 0 ;;
     esac
 
-    }
+}
 
 Xui_series_menu() {
     clear
