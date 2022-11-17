@@ -80,6 +80,18 @@ fi
 
 status1="未安装"
 status2="未运行"
+Install_Satus() {
+
+    if [[ -f /etc/systemd/system/x-ui.service ]]; then
+        status1="已安装"
+    fi
+    temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+    if [[ x"${temp}" == x"running" ]]; then
+        status2="已运行"
+    fi
+}
+status1="未安装"
+status2="未运行"
     if [[ -f /etc/systemd/system/x-ui.service ]]; then
         status1="已安装"
     fi
@@ -257,8 +269,6 @@ status2="未运行"
     }
     clear
     echo -e "
-    vps IPv4：${green}$v4${plain}
-    vps所在地：${green}$c4${plain}
     x-ui状态：${green}$status1  $status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
@@ -340,9 +350,8 @@ EOF
 
     }
     clear
+    Install_Satus
     echo -e "
-    vps IPv4：${green}$v4${plain}
-    vps所在地：${green}$c4${plain}
     x-ui状态：${green}$status1  $status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
@@ -367,6 +376,7 @@ EOF
 Xui_series_menu() {
     clear
     Get_region
+    Install_Satus
     echo -e "
     vps IPv4：${green}$v4${plain}
     vps所在地：${green}$c4${plain}
