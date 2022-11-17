@@ -185,6 +185,15 @@ Install_xui_ponk() {
     }
 #安装x-ui for deploy
 Deploy_x-ui() {
+    status1="未安装"
+    status2="未运行"
+    if [[ -f /usr/bin/x-ui ]]; then
+        status1="已安装"
+    fi
+    temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+    if [[ x"${temp}" == x"running" ]]; then
+        status2="已运行"
+    fi
     rm -rf /usr/bin/x-ui
     cat > /usr/bin/x-ui << EOF
  #!/bin/bash
