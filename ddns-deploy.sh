@@ -37,7 +37,7 @@ wget -N --no-check-certificate -O /usr/bin/ddns https://raw.fastgit.org/ppoonk/a
 chmod +x /usr/bin/ddns
 
     Download_deploy_ddns_go() {
-    Install_base
+    
     local arch1=""
     if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
         arch1="x86_64"
