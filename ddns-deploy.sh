@@ -61,7 +61,7 @@ chmod +x /usr/bin/ddns
     mkdir /usr/local/ddns-go
     tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
     rm -rf /usr/local/ddns.tar.gz
-
+}
     Start_deploy_ddns() {
   
         cd /usr/local/ddns-go
