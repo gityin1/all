@@ -33,7 +33,8 @@ status2="未运行"
     if [[ x"${temp}" == x"running" ]]; then
         status2="已运行"
     fi
-wget -N --no-check-certificate -O /usr/bin/x-ui https://github.com/ppoonk/all/master/all/x-ui-deploy.sh
+#wget -N --no-check-certificate -O /usr/bin/x-ui https://github.com/ppoonk/all/master/all/x-ui-deploy.sh
+wget -N --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/ppoonk/all/master/all/x-ui-deploy.sh
 chmod +x /usr/bin/x-ui
 Download_deploy_x-ui() {
     Get_bit
@@ -41,10 +42,10 @@ Download_deploy_x-ui() {
     apt install screen -y
 
     # arm32位和arm64位下载地址
-    #[[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
-    [[ $lbit == 32 ]] && url="https://github.com/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
-    #[[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
-    [[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    #[[ $lbit == 32 ]] && url="https://github.com/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    [[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    #[[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
     
      rm -rf /usr/local/x-ui.tar.gz
      rm -rf /usr/local/x-ui
