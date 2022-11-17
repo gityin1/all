@@ -33,6 +33,8 @@ status2="未运行"
     if [[ x"${temp}" == x"running" ]]; then
         status2="已运行"
     fi
+
+rm -rf /usr/bin/x-ui
 #wget -N --no-check-certificate -O /usr/bin/x-ui https://github.com/ppoonk/all/master/all/x-ui-deploy.sh
 wget -N --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/ppoonk/all/master/all/x-ui-deploy.sh
 chmod +x /usr/bin/x-ui
