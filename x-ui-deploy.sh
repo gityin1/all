@@ -29,8 +29,9 @@ status2="未运行"
     if [[ -f /usr/bin/x-ui ]]; then
         status1="已安装"
     fi
-    temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
-    if [[ x"${temp}" == x"running" ]]; then
+    #temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+    xuistatus=$(ps -ef | grep "x-ui" | grep -v "grep" | awk '{print $2}')
+    if [[ x"${xuistatus}" != x"" ]]; then
         status2="已运行"
     fi
 
