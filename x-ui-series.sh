@@ -250,7 +250,7 @@ status2="未运行"
     echo -e "
     vps IPv4：${green}$v4${plain}
     vps所在地：${green}$c4${plain}
-    x-ui状态：${green}$status1  $status2${plain}
+    x-ui状态：${green}$status1  $status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
         2.启动x-ui(安卓deploy)
@@ -331,6 +331,10 @@ EOF
 
     }
     clear
+    echo -e "
+    vps IPv4：${green}$v4${plain}
+    vps所在地：${green}$c4${plain}
+    x-ui状态：${green}$status1  $status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
         2.启动x-ui(安卓deploy)
