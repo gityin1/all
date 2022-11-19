@@ -57,8 +57,8 @@ chmod +x /usr/bin/ddns
         yellow "ddns-go已下载"
     else
         yellow "正在从github下载，请耐心等待······"
-        wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.2/ddns-go_3.7.2_Linux_${arch1}.tar.gz
-        #wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://github.com/jeessy2/ddns-go/releases/download/v3.7.2/ddns-go_3.7.2_Linux_${arch1}.tar.gz
+       # wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://download.fastgit.org/jeessy2/ddns-go/releases/download/v3.7.2/ddns-go_3.7.2_Linux_${arch1}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/ddns.tar.gz https://github.com/jeessy2/ddns-go/releases/download/v3.7.2/ddns-go_3.7.2_Linux_${arch1}.tar.gz
     fi
     rm -rf /usr/local/ddns-go
     mkdir /usr/local/ddns-go
@@ -83,6 +83,7 @@ chmod +x /usr/bin/ddns
         Stop_deploy_ddns
         yellow "正在卸载..."
         rm -rf /usr/local/ddns-go
+        rm -rf /root/.ddns_go_config.yaml
         yellow "ddns卸载完成"
 
     }
