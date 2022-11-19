@@ -21,6 +21,8 @@ green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+arch=$(uname -m)
+
 status1="未安装"
 status2="未运行"
     if [[ -f /usr/bin/ddns ]]; then
