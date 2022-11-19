@@ -1,4 +1,4 @@
-#!/bin/bash
+\#!/bin/bash
 
 green() {
 	echo -e "\033[32m\033[01m$1\033[0m"
@@ -37,7 +37,7 @@ wget -N --no-check-certificate -O /usr/bin/ddns https://raw.fastgit.org/ppoonk/a
 chmod +x /usr/bin/ddns
 
     Download_deploy_ddns_go() {
-    
+
     local arch1=""
     if [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
         arch1="x86_64"
@@ -64,7 +64,7 @@ chmod +x /usr/bin/ddns
     rm -rf /usr/local/ddns.tar.gz
 }
     Start_deploy_ddns() {
-  
+        Stop_deploy_ddns
         cd /usr/local/ddns-go
         screen -USdm ddns ./ddns-go   
         yellow "ddns已启动"
