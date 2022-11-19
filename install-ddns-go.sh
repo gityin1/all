@@ -18,7 +18,7 @@ blue() {
 arch=$(uname -m)
 # 获取command类型
 Get_Cmd_Type() {
-        if [[ $(command -v apt-get) ]]; then
+    if [[ $(command -v apt-get) ]]; then
     Cmd_Type="apt"
     elif [[ $(command -v yum) ]]; then
         Cmd_Type="yum"
@@ -139,6 +139,7 @@ Install_DDNS_go_deploy() {
     Uninstall_deploy_ddns_go() {
         Stop_deploy_ddns_go
         yellow "正在卸载..."
+        rm -rf /usr/bin/ddns
         rm -rf /usr/local/ddns-go
         rm -rf /root/.ddns_go_config.yaml
         yellow "ddns-go卸载完成"
