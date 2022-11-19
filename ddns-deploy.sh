@@ -83,6 +83,7 @@ chmod +x /usr/bin/ddns
     Uninstall_deploy_ddns() {
         Stop_deploy_ddns
         yellow "正在卸载..."
+        rm -rf /usr/bin/ddns
         rm -rf /usr/local/ddns-go
         rm -rf /root/.ddns_go_config.yaml
         yellow "ddns卸载完成"
