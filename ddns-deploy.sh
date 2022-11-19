@@ -35,7 +35,8 @@ status2="未运行"
     fi
 
 rm -rf /usr/bin/ddns
-wget -N --no-check-certificate -O /usr/bin/ddns https://raw.fastgit.org/ppoonk/all/master/ddns-deploy.sh
+#wget -N --no-check-certificate -O /usr/bin/ddns https://raw.fastgit.org/ppoonk/all/master/ddns-deploy.sh
+wget -N --no-check-certificate -O /usr/bin/ddns https://raw.githubusercontent.com/ppoonk/all/master/ddns-deploy.sh
 chmod +x /usr/bin/ddns
 
     Download_deploy_ddns_go() {
