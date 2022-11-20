@@ -45,10 +45,10 @@ Download_deploy_x-ui() {
     apt install screen -y
 
     # arm32位和arm64位下载地址
-    [[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
-    #[[ $lbit == 32 ]] && url="https://github.com/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
-    [[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
-    #[[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    #[[ $lbit == 32 ]] && url="https://raw.fastgit.org/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    [[ $lbit == 32 ]] && url="https://github.com/ppoonk/all/master/x-ui/x-ui-arm32.tar.gz"
+    #[[ $lbit == 64 ]] && url="https://download.fastgit.org/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
+    [[ $lbit == 64 ]] && url="https://github.com/vaxilu/x-ui/releases/latest/download/x-ui-linux-arm64.tar.gz"
     
      rm -rf /usr/local/x-ui.tar.gz
      rm -rf /usr/local/x-ui
@@ -62,8 +62,9 @@ Download_deploy_x-ui() {
     cd x-ui 
     chmod +x x-ui bin/* 
     /usr/local/x-ui/x-ui setting -username admin -password admin
-  
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/ppoonk/all/master/x-ui-series.sh
+
+    rm -rf /usr/bin/x-ui
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.fastgit.org/ppoonk/all/master/x-ui-deploy.sh
     chmod +x /usr/bin/x-ui
     yellow "所有文件下载完成，默认端口：54321，默认用户名admin，默认密码：admin"
     yellow "请及时修改用户名和密码"
@@ -86,6 +87,7 @@ Stop_deploy_x-ui() {
 Uninstall_deploy_x-ui() {
         Stop_deploy_x-ui
         yellow "正在卸载..."
+        rm -rf /usr/bin/x-ui
         rm -rf /usr/local/x-ui
         yellow "x-ui卸载完成"
 
@@ -93,7 +95,7 @@ Uninstall_deploy_x-ui() {
     clear
     
     echo -e "
-    x-ui状态：${green}$status1  $status2${plain}"
+    x-ui状态：$status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
         2.启动x-ui(安卓deploy)
