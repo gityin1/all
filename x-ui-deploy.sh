@@ -95,7 +95,7 @@ Uninstall_deploy_x-ui() {
     clear
     
     echo -e "
-    x-ui状态：$status2${plain}"
+    x-ui状态：${green}$status2${plain}"
     yellow "
         1.安装x-ui(安卓deploy)
         2.启动x-ui(安卓deploy)
