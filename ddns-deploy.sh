@@ -63,8 +63,8 @@ chmod +x /usr/bin/ddns
     fi
     rm -rf /usr/local/ddns-go
     mkdir /usr/local/ddns-go
-    tar zxvf ddns.tar.gz -C  /usr/local/ddns-go
-    rm -rf /usr/local/ddns.tar.gz
+    tar -zxvf ddns.tar.gz -C  /usr/local/ddns-go
+   # rm -rf /usr/local/ddns.tar.gz
 }
     Start_deploy_ddns() {
         Stop_deploy_ddns
