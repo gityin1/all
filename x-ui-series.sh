@@ -92,7 +92,7 @@ Install_Satus() {
 }
 status1="未安装"
 status2="未运行"
-    if [[ -f /etc/systemd/system/x-ui.service ]]; then
+    if [[ -f /etc/systemd/system/x-ui.service ]] && [[ -e /usr/local/x-ui/x-ui ]]; then
         status1="已安装"
     fi
     temp=$(systemctl status x-ui | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
